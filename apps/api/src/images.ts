@@ -94,7 +94,7 @@ export function images(
     }
 
     try {
-      const image = await sharp(file)
+      const image = await sharp(file, { animated: true })
         .resize({
           width: 2048,
           height: 1080,
