@@ -47,9 +47,8 @@ export const getServerSideProps = withInitialData(
     const trpc = createServerSideTRPC(context);
 
     try {
-      const currentUser = await trpc.users.getMe.query().catch(_ => null);
+      const currentUser = await trpc.users.getMe.query().catch(() => null);
       const [user, posts, comments] = await Promise.all([
-        trpc.users.getMe.query(),
         trpc.users.getOne.query({ id }),
         trpc.posts.getNew.query({ authorId: id }),
         trpc.comments.getMany.query({ authorId: id }),
