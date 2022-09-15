@@ -206,10 +206,16 @@ const subsites = [
     description:
       "Классические произведения мастеров искусства со всего мира. Наслаждайтесь!",
   },
+  {
+    name: "Аниме",
+    slug: "anime",
+    avatar: "/static/subsites/anime.png",
+    description:
+      "Всё о японской анимации: рецензии, разборы культурных феноменов, новости грядущих проектов.",
+  },
 ];
 
 async function main() {
-  await prisma.subsite.deleteMany();
   await prisma.subsite.createMany({ data: subsites });
 }
 
