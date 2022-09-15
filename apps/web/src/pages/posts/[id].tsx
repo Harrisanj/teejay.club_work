@@ -53,7 +53,7 @@ type Props = InferGetServerSidePropsType<typeof getServerSideProps>;
 
 const PostPage: NextPage<Props> = ({ post, comments }) => {
   return (
-    <Page title={post.title ?? `Пост от ${post.author.name}`} description="">
+    <Page title={post.title || `Пост от ${post.author.name}`} description="">
       <div className="md:max-w-2xl w-full md:mx-auto">
         <div className="flex flex-col items-center gap-y-4">
           <Post key={post.id} post={post} />
