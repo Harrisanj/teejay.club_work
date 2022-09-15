@@ -48,7 +48,7 @@ export class SignInFormState {
 
     try {
       const input = await signInInput.parseAsync({
-        login: this.login,
+        login: this.login.toLowerCase().trim(),
         password: this.password,
       });
 
