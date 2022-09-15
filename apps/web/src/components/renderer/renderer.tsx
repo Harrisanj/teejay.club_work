@@ -58,6 +58,7 @@ function renderBlock(block: OutputBlockData, isSummary: boolean) {
   if (block.type === "image") {
     return (
       <div
+        key={block.id}
         className={classNames("ce-block", {
           "ce-block--stretched": block.data.stretched,
         })}
@@ -70,16 +71,27 @@ function renderBlock(block: OutputBlockData, isSummary: boolean) {
               "image-tool--withBorder": block.data.withBorder,
             })}
           >
-            <Link
-              href={block.data.url ?? block.data.file.url}
-              className="image-tool__image border-none"
-            >
-              <img
-                className="image-tool__image-picture"
-                src={block.data.url ?? block.data.file.url}
-                alt={block.data.caption}
-              />
-            </Link>
+            {isSummary ? (
+              <div className="image-tool__image border-none">
+                <img
+                  className="image-tool__image-picture"
+                  src={block.data.url ?? block.data.file.url}
+                  alt={block.data.caption}
+                />
+              </div>
+            ) : (
+              <Link
+                href={block.data.url ?? block.data.file.url}
+                className="image-tool__image border-none"
+              >
+                <img
+                  className="image-tool__image-picture"
+                  src={block.data.url ?? block.data.file.url}
+                  alt={block.data.caption}
+                />
+              </Link>
+            )}
+
             <div className="cdx-input image-tool__caption">
               {block.data.caption}
             </div>
