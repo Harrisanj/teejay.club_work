@@ -4,6 +4,7 @@ import { memo } from "react";
 
 import { classNames, sanitizeHtml } from "../../utilities";
 import { YoutubeEmbed, RedditEmbed } from "../embeds";
+import { Link } from "../link";
 
 const TwitterEmbed = dynamic(
   () => import("../embeds").then((i) => i.TwitterEmbed),
@@ -56,10 +57,7 @@ function renderBlock(block: OutputBlockData, isSummary: boolean) {
 
   if (block.type === "image") {
     return (
-      <a
-        href={block.data.url ?? block.data.file.url}
-        target="_blank"
-        rel="noreferrer"
+      <div
         className={classNames("ce-block", {
           "ce-block--stretched": block.data.stretched,
         })}
@@ -72,19 +70,22 @@ function renderBlock(block: OutputBlockData, isSummary: boolean) {
               "image-tool--withBorder": block.data.withBorder,
             })}
           >
-            <div className="image-tool__image">
+            <Link
+              href={block.data.url ?? block.data.file.url}
+              className="image-tool__image border-none"
+            >
               <img
                 className="image-tool__image-picture"
                 src={block.data.url ?? block.data.file.url}
                 alt={block.data.caption}
               />
-            </div>
+            </Link>
             <div className="cdx-input image-tool__caption">
               {block.data.caption}
             </div>
           </div>
         </div>
-      </a>
+      </div>
     );
   }
 

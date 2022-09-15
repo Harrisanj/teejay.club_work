@@ -97,7 +97,11 @@ body {
 }
 
 .image-tool__image {
-  @apply -mx-4 !rounded-none flex flex-row justify-center;
+  @apply flex flex-row justify-center;
+}
+
+.image-tool--stretched .image-tool__image {
+  @apply -mx-4 !rounded-none;
 }
 
 .image-tool__image-picture {
@@ -107,6 +111,10 @@ body {
 
 .image-tool--stretched .image-tool__image-picture {
   @apply !rounded-none object-cover;
+}
+
+.image-tool__caption {
+  @apply text-gray-500 text-center text-sm;
 }
 
 .cdx-block,
