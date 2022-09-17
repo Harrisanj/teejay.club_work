@@ -1,11 +1,8 @@
 import { z } from "zod";
 
+import { id, sign } from "@/utilities/zod-types";
+
 export const votePostInput = z.object({
-  postId: z.number().int().min(1),
-  sign: z
-    .number()
-    .int()
-    .min(-1)
-    .max(1)
-    .refine((value) => value !== 0),
+  postId: id,
+  sign,
 });

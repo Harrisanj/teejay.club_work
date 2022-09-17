@@ -2,15 +2,23 @@ import { createCommentInput, InferInput } from "@teejay/api";
 import { makeAutoObservable } from "mobx";
 import { ChangeEvent, FormEvent } from "react";
 
-import { Task, ClientSideTRPC } from "../../../utilities";
+import { Task, ClientSideTRPC } from "../../../../utilities";
+
+import { Props } from "./new-comment-form.view";
 
 class NewCommentFormState {
-  constructor(
-    public readonly trpcClient: ClientSideTRPC,
-    private postId: number,
-    private onCreate?: () => void
-  ) {
+  constructor(public readonly trpcClient: ClientSideTRPC) {
     makeAutoObservable(this, { trpcClient: false }, { autoBind: true });
+  }
+
+  private postId: number | undefined = undefined;
+  private parentId: number | undefined = undefined;
+  private onCreate: (() => void) | undefined = undefined;
+
+  onUpdate({ postId, parentId, onCreate }: Props) {
+    this.postId = postId;
+    this.parentId = parentId;
+    this.onCreate = onCreate;
   }
 
   private _text = "";
@@ -48,6 +56,7 @@ class NewCommentFormState {
     try {
       const input = createCommentInput.parse({
         postId: this.postId,
+        parentId: this.parentId,
         content: this.text.trim(),
       });
       await this.createCommentTask.run(input);

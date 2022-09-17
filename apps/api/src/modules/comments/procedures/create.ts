@@ -1,4 +1,5 @@
 import { createCommentInput } from "../inputs";
+import { select } from "../selector";
 
 import { blockGuard } from "@/guards";
 import { prisma } from "@/prisma";
@@ -13,5 +14,6 @@ export const create = t.procedure
         ...input,
         authorId: user.id,
       },
+      select: select(user?.id ?? -1),
     });
   });

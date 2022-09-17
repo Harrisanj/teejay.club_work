@@ -10,7 +10,7 @@ export const RightSide = observer(() => {
   const userQuery = trpc.users.getMe.useQuery();
   const user = userQuery.data;
   return (
-    <div className="ml-auto flex flex-row gap-x-4 items-center z-10">
+    <div className="ml-auto flex flex-row gap-x-4 items-center z-20">
       {user && (
         <Link
           href="/posts/new"

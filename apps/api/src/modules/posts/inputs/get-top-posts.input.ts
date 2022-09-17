@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 import { paginationInput } from "@/modules/common";
+import { id } from "@/utilities/zod-types";
 
 export const getTopPostsInput = paginationInput.merge(
   z
@@ -12,8 +13,8 @@ export const getTopPostsInput = paginationInput.merge(
         z.literal("month"),
         z.literal("year"),
       ]),
-      authorId: z.number().int().min(1).optional(),
-      subsiteId: z.number().int().min(1).optional(),
+      authorId: id.optional(),
+      subsiteId: id.optional(),
     })
     .strict()
 );
