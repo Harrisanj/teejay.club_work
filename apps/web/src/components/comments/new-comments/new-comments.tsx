@@ -4,10 +4,9 @@ import { formatDistanceShort, trpc, getAvatarUrl } from "../../../utilities";
 import { Link } from "../../link";
 
 export const NewComments: FC = () => {
-  const commentsQuery = trpc.comments.getMany.useQuery(
-    { sort: "new", take: 10 },
-    { refetchInterval: 5000 }
-  );
+  const commentsQuery = trpc.comments.getNew.useQuery(void 0, {
+    refetchInterval: 5000,
+  });
 
   const comments = commentsQuery.data?.data ?? [];
 

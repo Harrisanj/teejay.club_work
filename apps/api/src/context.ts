@@ -3,10 +3,11 @@ import { CreateFastifyContextOptions } from "@trpc/server/adapters/fastify/index
 import { z } from "zod";
 
 import { extractJwt, verifyJwt } from "@/utilities";
+import { id } from "@/utilities/zod-types";
 
 const idSchema = z.preprocess(
   (value) => (typeof value === "string" ? +value : value),
-  z.number().int().min(1)
+  id
 );
 
 export async function createContext({ req, res }: CreateFastifyContextOptions) {
