@@ -1,5 +1,10 @@
 import { Listbox, Transition } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
+import {
+  EyeIcon,
+  PencilIcon,
+  PencilSquareIcon,
+} from "@heroicons/react/24/outline";
 import { observer } from "mobx-react-lite";
 import dynamic from "next/dynamic";
 import Image from "next/image";
@@ -12,6 +17,7 @@ import {
   useClientSideTRPC,
   getAvatarUrl,
 } from "../../../utilities";
+import { Renderer } from "../../renderer";
 import { Spinner } from "../../spinner";
 
 import { NewPostFormState } from "./new-post-form.state";
@@ -130,52 +136,42 @@ export const NewPostForm = observer(() => {
           <div className="ce-block__content">
             <input
               id="title-input"
-              className="w-full font-bold text-xl placeholder-gray-300 outline-none"
+              className="w-full font-bold text-xl placeholder-gray-300 bg-transparent outline-none"
               placeholder="Заголовок"
               type="text"
               value={state.title}
               onChange={state.handleTitleChange}
+              disabled={state.isPreview}
             />
           </div>
         </div>
         {"title" in state.errors && (
           <div className="text-red-500">{state.errors["title"]}</div>
         )}
-        <Editor
-          placeholder="Напишите что-нибудь..."
-          value={state.content}
-          onChange={state.setContent}
-        />
-        {/*
-        <TextArea
-          className="min-h-[128px] placeholder-gray-300 outline-none"
-          placeholder="Текст"
-          value={state.content}
-          onChange={state.handleContentChange}
-        />
-        */}
+        {state.isPreview ? (
+          <div className="ce-block">
+            <div className="ce-block__content">
+              <Renderer>{state.content}</Renderer>
+            </div>
+          </div>
+        ) : (
+          <Editor
+            placeholder="Напишите что-нибудь..."
+            value={state.content}
+            onChange={state.setContent}
+          />
+        )}
         {"content" in state.errors && (
           <div className="text-red-500">{state.errors["content"]}</div>
         )}
-
         <div className="flex flex-row justify-end items-center flex-wrap gap-3 content">
-          {/*
-          <div className="flex flex-row items-center gap-x-1">
-            <svg
-              className="w-5 h-5 fill-gray-400"
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 48 48"
-            >
-              <path d="M 24 4 C 12.972066 4 4 12.972074 4 24 C 4 35.027926 12.972066 44 24 44 C 35.027934 44 44 35.027926 44 24 C 44 12.972074 35.027934 4 24 4 z M 24 7 C 33.406615 7 41 14.593391 41 24 C 41 33.406609 33.406615 41 24 41 C 14.593385 41 7 33.406609 7 24 C 7 14.593391 14.593385 7 24 7 z M 24 14 A 2 2 0 0 0 24 18 A 2 2 0 0 0 24 14 z M 23.976562 20.978516 A 1.50015 1.50015 0 0 0 22.5 22.5 L 22.5 33.5 A 1.50015 1.50015 0 1 0 25.5 33.5 L 25.5 22.5 A 1.50015 1.50015 0 0 0 23.976562 20.978516 z" />
-            </svg>
-            <div className="text-gray-400">
-              Для разметки используйте{" "}
-              <a href="/markdown" target="_blank" rel="noreferrer">
-                Markdown
-              </a>
-            </div>
-          </div>
-          */}
+          <button type="button" onClick={() => state.togglePreview()}>
+            {state.isPreview ? (
+              <PencilSquareIcon className="w-6 h-6 stroke-black" />
+            ) : (
+              <EyeIcon className="w-6 h-6 stroke-black" />
+            )}
+          </button>
           <button
             type="submit"
             className="px-3 py-1 rounded bg-blue-500 text-white cursor-pointer"

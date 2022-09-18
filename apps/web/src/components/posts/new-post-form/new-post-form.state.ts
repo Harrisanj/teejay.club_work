@@ -44,6 +44,16 @@ export class NewPostFormState {
     this._content = value;
   };
 
+  private _isPreview = false;
+
+  get isPreview() {
+    return this._isPreview;
+  }
+
+  togglePreview() {
+    this._isPreview = !this._isPreview;
+  }
+
   private _errors: Record<string, string[]> = {};
 
   get errors() {
