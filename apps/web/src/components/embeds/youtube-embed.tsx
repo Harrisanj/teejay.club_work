@@ -31,7 +31,9 @@ export const YoutubeEmbed = memo<Props>(({ id }) => {
         src={`https://www.youtube.com/embed/${id}`}
         width="100%"
         height={height}
-        className="absolute inset-0"
+        className="absolute inset-0 overflow-hidden"
+        // eslint-disable-next-line react/no-unknown-property
+        scrolling="no"
       />
     </div>
   );
