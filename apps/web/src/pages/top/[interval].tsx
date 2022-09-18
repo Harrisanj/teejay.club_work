@@ -27,7 +27,7 @@ export const getServerSideProps = withInitialData(
   > => {
     let { interval } = context.params ?? {};
     if (typeof interval !== "string") {
-      interval = "day";
+      interval = "today";
     }
 
     const input = getTopPostsInput.safeParse({
