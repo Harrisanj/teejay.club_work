@@ -1,5 +1,12 @@
 import { Prisma } from "@teejay/prisma-client";
-import { startOfToday, subDays, subMonths, subWeeks, subYears } from "date-fns";
+import {
+  startOfToday,
+  subDays,
+  subHours,
+  subMonths,
+  subWeeks,
+  subYears,
+} from "date-fns";
 
 import { getTopPostsInput } from "../inputs";
 import { select } from "../selector";
@@ -20,7 +27,7 @@ export const getTop = t.procedure
         isPublished: true,
         createdAt: {
           gte: {
-            today: startOfToday(),
+            today: subHours(new Date(), 12),
             day: subDays(new Date(), 1),
             week: subWeeks(new Date(), 1),
             month: subMonths(new Date(), 1),
