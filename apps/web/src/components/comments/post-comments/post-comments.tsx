@@ -1,5 +1,6 @@
 import { observer } from "mobx-react-lite";
-import { useState } from "react";
+import { useRouter } from "next/router";
+import { useMemo, useState } from "react";
 
 import { trpc } from "../../../utilities";
 import { Card } from "../../card";
@@ -8,35 +9,33 @@ import { Spinner } from "../../spinner";
 
 import { CommentList } from "./comment-list/comment-list";
 import { NewCommentForm } from "./new-comment-form";
-import { TComment } from "./type";
 
 type Props = {
   postId: number;
-
-  comments: {
-    meta: {
-      total: number;
-    };
-    data: TComment[];
-  };
 };
 
-export const PostComments = observer<Props>(({ postId, comments }) => {
-  const commentsQuery = trpc.comments.getByPost.useQuery(
-    {
-      postId,
-      take: 20,
-    },
-    {
-      initialData: comments,
-      refetchInterval: 5000,
+export const PostComments = observer<Props>(({ postId }) => {
+  const router = useRouter();
+  const commentId = useMemo(() => {
+    const string = router.query.comment;
+    if (typeof string !== "string") {
+      return undefined;
     }
+    const number = +string;
+    if (!Number.isSafeInteger(number)) {
+      return undefined;
+    }
+    return number;
+  }, [router]);
+
+  const commentsQuery = trpc.comments.getByPost.useQuery(
+    { postId, commentId },
+    { refetchInterval: 5000 }
   );
 
-  const { total } = commentsQuery.data?.meta ?? { total: 0 };
-
   const [replyTo, setReplyTo] = useState<number>();
-
+  const { total } = commentsQuery.data?.meta ?? { total: 0 };
+  const comments = commentsQuery?.data?.data ?? [];
   return (
     <Card id="comments" className="relative flex flex-col w-full max-w-2xl">
       <div className="font-bold text-xl">
@@ -51,7 +50,7 @@ export const PostComments = observer<Props>(({ postId, comments }) => {
       <div className="relative mt-3 flex flex-col gap-y-2">
         <Spinner isSpinning={commentsQuery.isLoading} />
         <CommentList
-          comments={commentsQuery?.data?.data ?? []}
+          comments={comments}
           replyTo={replyTo}
           onReplyToChange={setReplyTo}
         />

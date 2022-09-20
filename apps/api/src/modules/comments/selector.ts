@@ -30,16 +30,3 @@ export const select = (userId: number) =>
     },
     _count: { select: { children: true } },
   });
-
-export const selectWithChildren = (userId: number) =>
-  Prisma.validator<Prisma.CommentSelect>()({
-    ...select(userId),
-    children: {
-      select: {
-        ...select(userId),
-        children: {
-          select: select(userId),
-        },
-      },
-    },
-  });

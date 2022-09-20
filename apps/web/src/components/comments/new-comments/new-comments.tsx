@@ -21,7 +21,7 @@ export const NewComments: FC = () => {
         {comments.map((comment) => (
           <Link
             key={comment.id}
-            href={`/posts/${comment.postId}#comments/${comment.id}`}
+            href={`/posts/${comment.postId}?comment=${comment.id}`}
             className="flex flex-col gap-y-1 text-sm"
           >
             <div className="flex flex-row items-center">
