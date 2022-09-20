@@ -18,6 +18,9 @@ export const getTop = t.procedure
         authorId,
         subsiteId,
         isPublished: true,
+        score: {
+          gte: 0
+        },
         createdAt: {
           gte: {
             today: subHours(new Date(), 12),
