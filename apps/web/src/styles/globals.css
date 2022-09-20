@@ -190,11 +190,12 @@ body {
 
 @media screen(md) {
   .sidebar {
-    @apply relative bg-transparent shadow-none z-auto;
+    @apply bg-transparent shadow-none z-auto;
+    @apply sticky top-14 h-[calc(100vh-theme(space.14))];
   }
 
   .sidebar:not(.sidebar--open) {
-    @apply w-0 min-w-0;
+    @apply w-0 min-w-0 relative;
   }
 
   .sidebar__header {
