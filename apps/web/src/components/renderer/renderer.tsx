@@ -1,4 +1,5 @@
 import { OutputBlockData, OutputData } from "@editorjs/editorjs";
+import { ChevronRightIcon } from "@heroicons/react/20/solid";
 import dynamic from "next/dynamic";
 import { memo } from "react";
 
@@ -28,8 +29,13 @@ export const Renderer = memo<Props>(({ isSummary = false, children }) => {
 
   if (isSummary) {
     return (
-      <div className="content">
+      <div className="content flex flex-col gap-y-3">
         {renderBlock(children.blocks[0], isSummary)}
+        {children.blocks.length > 1 && (
+          <div className="text-blue-500 text-sm inline-flex flex-row items-center">
+            Читать дальше <ChevronRightIcon className="w-4 h-4" />
+          </div>
+        )}
       </div>
     );
   }
