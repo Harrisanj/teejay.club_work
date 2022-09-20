@@ -1,12 +1,5 @@
 import { Prisma } from "@teejay/prisma-client";
-import {
-  startOfToday,
-  subDays,
-  subHours,
-  subMonths,
-  subWeeks,
-  subYears,
-} from "date-fns";
+import { subDays, subHours, subMonths, subWeeks, subYears } from "date-fns";
 
 import { getTopPostsInput } from "../inputs";
 import { select } from "../selector";

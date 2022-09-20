@@ -1,4 +1,4 @@
-import { AppRouter, TPost } from "@teejay/api";
+import { TPost } from "@teejay/api";
 
 import { PostComments, NewComments } from "../../components/comments";
 import { Page } from "../../components/page";
@@ -15,12 +15,7 @@ import type {
 export const getServerSideProps = withInitialData(
   async (
     context: GetServerSidePropsContext
-  ): Promise<
-    GetServerSidePropsResult<{
-      post: TPost;
-      comments: AppRouter["comments"]["getByPost"]["_def"]["_output_out"];
-    }>
-  > => {
+  ): Promise<GetServerSidePropsResult<{ post: TPost }>> => {
     if (
       !context.params ||
       !context.params.id ||
@@ -37,11 +32,8 @@ export const getServerSideProps = withInitialData(
     const trpc = createServerSideTRPC(context);
 
     try {
-      const [post, comments] = await Promise.all([
-        trpc.posts.getOne.query({ id }),
-        trpc.comments.getByPost.query({ postId: id, take: 20 }),
-      ]);
-      return { props: { post, comments } };
+      const post = await trpc.posts.getOne.query({ id });
+      return { props: { post } };
     } catch (error) {
       console.error(error);
       return { notFound: true } as const;
@@ -51,13 +43,13 @@ export const getServerSideProps = withInitialData(
 
 type Props = InferGetServerSidePropsType<typeof getServerSideProps>;
 
-const PostPage: NextPage<Props> = ({ post, comments }) => {
+const PostPage: NextPage<Props> = ({ post }) => {
   return (
     <Page title={post.title || `Пост от ${post.author.name}`} description="">
       <div className="md:max-w-2xl w-full md:mx-auto">
         <div className="flex flex-col items-center gap-y-4">
           <Post key={post.id} post={post} />
-          <PostComments postId={post.id} comments={comments} />
+          <PostComments postId={post.id} />
         </div>
       </div>
       <NewComments />

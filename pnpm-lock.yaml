@@ -68,7 +68,6 @@ importers:
       '@babel/core': ^7.18.13
       '@editorjs/delimiter': ^1.2.0
       '@editorjs/editorjs': ^2.25.0
-      '@editorjs/embed': ^2.5.3
       '@editorjs/header': ^2.6.2
       '@editorjs/image': ^2.6.2
       '@editorjs/list': ^1.7.0
@@ -106,7 +105,6 @@ importers:
     dependencies:
       '@editorjs/delimiter': 1.2.0
       '@editorjs/editorjs': 2.25.0
-      '@editorjs/embed': 2.5.3
       '@editorjs/header': 2.6.2
       '@editorjs/image': 2.6.2
       '@editorjs/list': 1.7.0
@@ -202,14 +200,12 @@ importers:
       '@babel/parser': ^7.18.13
       '@babel/traverse': ^7.18.13
       fast-glob: ^3.2.11
-      glob: ^8.0.3
       json5: ^2.2.1
     dependencies:
       '@babel/generator': 7.18.13
       '@babel/parser': 7.18.13
       '@babel/traverse': 7.18.13
       fast-glob: 3.2.11
-      glob: 8.0.3
       json5: 2.2.1
 
 packages:
@@ -425,10 +421,6 @@ packages:
       codex-notifier: 1.1.2
       codex-tooltip: 1.0.5
       nanoid: 3.3.4
-    dev: false
-
-  /@editorjs/embed/2.5.3:
-    resolution: {integrity: sha512-+X0xX2tiwQjU/B2rPDv8DOwg0suiqrt2h/o9frjR308YuY1VTpqjLRF1lIV4TmelQyVr9cXkZruaa4Ty1wvfJg==}
     dev: false
 
   /@editorjs/header/2.6.2:
@@ -1358,6 +1350,7 @@ packages:
     resolution: {integrity: sha512-XnAIvQ8eM+kC6aULx6wuQiwVsnzsi9d3WxzV3FpWTGA19F621kwdbsAcFKXgKUHZWsy+mY6iL1sHTxWEFCytDA==}
     dependencies:
       balanced-match: 1.0.2
+    dev: true
 
   /braces/3.0.2:
     resolution: {integrity: sha512-b8um+L1RzM3WDSzvhm6gIz1yfTbBt6YTlcEKAvsmqCZZFw46z626lVj9j1yEPW33H5H+lBQpZMP1k8l+78Ha0A==}
@@ -2605,6 +2598,7 @@ packages:
       inherits: 2.0.4
       minimatch: 5.1.0
       once: 1.4.0
+    dev: true
 
   /globals/11.12.0:
     resolution: {integrity: sha512-WOBp/EEGUiIsJSp7wcv/y6MO+lV9UoncWqxuFfm8eBwzWNgyfBd6Gz+IeKQ9jCmyhoH99g15M3T+QaVHFjizVA==}
@@ -3537,6 +3531,7 @@ packages:
     engines: {node: '>=10'}
     dependencies:
       brace-expansion: 2.0.1
+    dev: true
 
   /minimist/1.2.6:
     resolution: {integrity: sha512-Jsjnk4bw3YJqYzbdyBiNsPWHPfO++UGG749Cxs6peCu5Xg4nrena6OVxOYxrQTqww0Jmwt+Ref8rggumkTLz9Q==}
