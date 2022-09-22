@@ -1,4 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { enableStaticRendering } from "mobx-react-lite";
 import { AppProps } from "next/app";
 import { useState } from "react";
 
@@ -12,6 +13,8 @@ import {
 } from "../utilities";
 
 import "../styles/globals.css";
+
+enableStaticRendering(typeof window === "undefined");
 
 type Props = Omit<AppProps, "pageProps"> & {
   pageProps: { initialData?: InitialData };

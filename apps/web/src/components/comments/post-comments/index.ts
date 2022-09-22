@@ -1,1 +1,1 @@
-export * from "./post-comments";
+export * from "./post-comments.mediator";

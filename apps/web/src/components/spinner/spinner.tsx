@@ -1,16 +1,27 @@
 import { memo } from "react";
 
+import { classNames } from "../../utilities";
+
 type Props = {
   isSpinning: boolean;
+  isTranslucent?: boolean;
 };
 
-export const Spinner = memo<Props>(({ isSpinning }) => {
+export const Spinner = memo<Props>(({ isSpinning, isTranslucent = true }) => {
   if (!isSpinning) {
     return null;
   }
 
   return (
-    <div className="absolute inset-0 bg-white/75 flex items-center justify-center z-40">
+    <div
+      className={classNames(
+        "absolute inset-0  flex items-center justify-center z-40",
+        {
+          "bg-white/75": isTranslucent,
+          "bg-white": !isTranslucent,
+        }
+      )}
+    >
       <svg
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 24 24"

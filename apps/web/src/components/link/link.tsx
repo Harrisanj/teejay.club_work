@@ -5,9 +5,9 @@ type Props = ComponentProps<typeof NextLink>;
 
 export const Link = forwardRef(
   (props: Props, ref: ForwardedRef<HTMLAnchorElement>) => {
-    const { href, children, ...rest } = props;
+    const { href, children, scroll, ...rest } = props;
     return (
-      <NextLink href={href}>
+      <NextLink href={href} scroll={scroll}>
         <a ref={ref} {...rest}>
           {children}
         </a>
