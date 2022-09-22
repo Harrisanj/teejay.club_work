@@ -1,4 +1,5 @@
 import { observer } from "mobx-react-lite";
+import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
 import { classNames, useClientSideTRPC } from "../../../../utilities";
@@ -15,8 +16,9 @@ export type Props = {
 };
 
 export const NewCommentForm = observer<Props>((props) => {
-  const trpcClient = useClientSideTRPC();
-  const [state] = useState(() => new NewCommentFormState(trpcClient));
+  const trpc = useClientSideTRPC();
+  const router = useRouter();
+  const [state] = useState(() => new NewCommentFormState(trpc, router));
   useEffect(() => {
     state.onUpdate(props);
   }, [state, props]);

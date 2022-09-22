@@ -1,5 +1,6 @@
 import { createCommentInput, InferInput } from "@teejay/api";
 import { makeAutoObservable } from "mobx";
+import { NextRouter } from "next/router";
 import { ChangeEvent, FormEvent } from "react";
 
 import { Task, ClientSideTRPC } from "../../../../utilities";
@@ -7,8 +8,11 @@ import { Task, ClientSideTRPC } from "../../../../utilities";
 import { Props } from "./new-comment-form.view";
 
 class NewCommentFormState {
-  constructor(public readonly trpcClient: ClientSideTRPC) {
-    makeAutoObservable(this, { trpcClient: false }, { autoBind: true });
+  constructor(
+    public readonly trpc: ClientSideTRPC,
+    public readonly router: NextRouter
+  ) {
+    makeAutoObservable(this, { trpc: false }, { autoBind: true });
   }
 
   private postId: number | undefined = undefined;
@@ -41,12 +45,24 @@ class NewCommentFormState {
 
   createCommentTask = new Task(
     async (input: InferInput<typeof createCommentInput>) => {
-      await this.trpcClient.comments.create.mutate(input);
+      const comment = await this.trpc.comments.create.mutate(input);
 
       this.onCreate?.();
 
       this.text = "";
       this.createCommentTask.reset();
+      this.router.push(
+        {
+          query: {
+            id: this.postId,
+            comment: comment.id,
+          },
+        },
+        undefined,
+        {
+          scroll: false,
+        }
+      );
     }
   );
 

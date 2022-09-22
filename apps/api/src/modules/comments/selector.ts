@@ -3,6 +3,7 @@ import { Prisma } from "@teejay/prisma-client";
 export const select = (userId: number) =>
   Prisma.validator<Prisma.CommentSelect>()({
     id: true,
+    parentId: true,
     content: true,
     score: true,
     postId: true,
