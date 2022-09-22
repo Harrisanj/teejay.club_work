@@ -1,4 +1,7 @@
-import { ListBulletIcon } from "@heroicons/react/24/outline";
+import {
+  ClipboardDocumentIcon,
+  ListBulletIcon,
+} from "@heroicons/react/24/outline";
 import { useRouter } from "next/router";
 import { FC, ReactNode } from "react";
 
@@ -77,8 +80,21 @@ export const Menu: FC = () => {
         </Item>
       </Link>
       <div className="mt-4"></div>
+      <Link href="/rules">
+        <Item
+          className="bg-transparent text-black opacity-75 hover:opacity-100 hover:bg-gray-200 shadow-none hover:!shadow-none"
+          icon={
+            <div className="mt-0.5 flex items-end justify-center">
+              <ClipboardDocumentIcon className="w-5 h-5" />
+            </div>
+          }
+        >
+          Правила
+        </Item>
+      </Link>
       <Link href="/donate">
         <Item
+          className="bg-transparent text-black opacity-75 hover:opacity-100 hover:bg-gray-200 shadow-none hover:!shadow-none"
           icon={
             <div className="relative w-6 h-6">
               <svg
