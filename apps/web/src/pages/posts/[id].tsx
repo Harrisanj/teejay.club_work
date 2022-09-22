@@ -1,6 +1,7 @@
 import { TPost } from "@teejay/api";
+import dynamic from "next/dynamic";
 
-import { PostComments, NewComments } from "../../components/comments";
+import { NewComments } from "../../components/comments";
 import { Page } from "../../components/page";
 import { Post } from "../../components/posts";
 import { createServerSideTRPC, withInitialData } from "../../utilities";
@@ -11,6 +12,10 @@ import type {
   InferGetServerSidePropsType,
   NextPage,
 } from "next";
+
+const PostComments = dynamic(() =>
+  import("../../components/comments").then(({ PostComments }) => PostComments)
+);
 
 export const getServerSideProps = withInitialData(
   async (
