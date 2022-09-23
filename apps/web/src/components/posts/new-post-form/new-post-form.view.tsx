@@ -34,7 +34,7 @@ export const NewPostForm = observer(() => {
   }
 
   return (
-    <div className="content relative flex flex-col gap-y-3">
+    <div className="relative flex flex-col gap-y-3">
       <Spinner
         isSpinning={subsitesQuery.isFetching || state.createPostTask.isRunning}
       />
@@ -82,7 +82,7 @@ export const NewPostForm = observer(() => {
                   <Listbox.Option value={undefined}>
                     <div
                       className={classNames(
-                        "flex flex-row gap-x-2 items-center px-4 py-2 text-sm",
+                        "flex flex-row gap-x-2 items-center px-4 py-2 text-sm whitespace-nowrap",
                         "text-gray-900 hover:bg-gray-100 cursor-pointer"
                       )}
                     >
@@ -101,7 +101,7 @@ export const NewPostForm = observer(() => {
                     <Listbox.Option key={subsite.id} value={subsite}>
                       <div
                         className={classNames(
-                          "flex flex-row gap-x-2 items-center px-4 py-2 text-sm",
+                          "flex flex-row gap-x-2 items-center px-4 py-2 text-sm whitespace-nowrap",
                           "text-gray-900 hover:bg-gray-100 cursor-pointer"
                         )}
                       >
@@ -122,7 +122,10 @@ export const NewPostForm = observer(() => {
           </div>
         </div>
       </div>
-      <form className="flex flex-col gap-y-3" onSubmit={state.handleSubmit}>
+      <form
+        className="content flex flex-col gap-y-3"
+        onSubmit={state.handleSubmit}
+      >
         {state.createPostTask.isFaulted && (
           <div className="text-red-500">
             {state.createPostTask.error.message}
