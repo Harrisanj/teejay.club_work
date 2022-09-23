@@ -97,7 +97,7 @@ export const SignUpForm = observer<Props>(({ invite }) => {
           type="submit"
           className="px-3 py-1 rounded bg-blue-500 text-white cursor-pointer"
         >
-          Войти
+          Зарегистрироваться
         </button>
       </div>
     </Form>
