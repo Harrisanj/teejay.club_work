@@ -19,11 +19,11 @@ export const getTop = t.procedure
         subsiteId,
         isPublished: true,
         score: {
-          gte: 0
+          gte: 0,
         },
         createdAt: {
           gte: {
-            today: subHours(new Date(), 12),
+            today: subHours(new Date(), 16),
             day: subDays(new Date(), 1),
             week: subWeeks(new Date(), 1),
             month: subMonths(new Date(), 1),
