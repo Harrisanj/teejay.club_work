@@ -162,10 +162,10 @@ export const Post: FC<Props> = memo(
         ) : (
           <div className="mt-3 flex flex-col gap-y-2">
             <div className="font-bold text-xl">{post.title}</div>
-            {post.contentV1 ? (
-              <Markdown>{post.contentV1}</Markdown>
-            ) : (
+            {post.contentV2 ? (
               <Renderer>{post.contentV2 as unknown as OutputData}</Renderer>
+            ) : (
+              <Markdown>{post.contentV1 ?? ""}</Markdown>
             )}
           </div>
         )}
