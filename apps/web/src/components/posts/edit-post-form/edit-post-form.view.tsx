@@ -1,6 +1,7 @@
 import { Listbox, Transition } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import { EyeIcon, PencilSquareIcon } from "@heroicons/react/24/outline";
+import { AppRouter } from "@teejay/api";
 import { observer } from "mobx-react-lite";
 import dynamic from "next/dynamic";
 import Image from "next/image";
@@ -16,16 +17,24 @@ import {
 import { Renderer } from "../../renderer";
 import { Spinner } from "../../spinner";
 
-import { NewPostFormState } from "./new-post-form.state";
+import { EditPostFormState } from "./edit-post-form.state";
 
 const Editor = dynamic(() => import("../../editor").then((i) => i.Editor));
 
-export const NewPostForm = observer(() => {
-  const trpcClient = useClientSideTRPC();
-  const userQuery = trpc.users.getMe.useQuery();
+type Props = {
+  post?: AppRouter["posts"]["getOne"]["_def"]["_output_out"];
+};
+
+export const EditPostForm = observer<Props>(({ post }) => {
+  const clientSideTRPC = useClientSideTRPC();
   const router = useRouter();
-  const [state] = useState(() => new NewPostFormState(trpcClient, router));
+  const [state] = useState(
+    () => new EditPostFormState(clientSideTRPC, router, post)
+  );
+
+  const userQuery = trpc.users.getMe.useQuery();
   const subsitesQuery = trpc.subsites.getAll.useQuery();
+
   const subsites = subsitesQuery.data;
   const user = userQuery.data;
 
@@ -36,7 +45,7 @@ export const NewPostForm = observer(() => {
   return (
     <div className="relative flex flex-col gap-y-3">
       <Spinner
-        isSpinning={subsitesQuery.isFetching || state.createPostTask.isRunning}
+        isSpinning={subsitesQuery.isFetching || state.submitTask.isRunning}
       />
       <div className="ce-block">
         <div className="ce-block__content">
@@ -126,10 +135,8 @@ export const NewPostForm = observer(() => {
         className="content flex flex-col gap-y-3"
         onSubmit={state.handleSubmit}
       >
-        {state.createPostTask.isFaulted && (
-          <div className="text-red-500">
-            {state.createPostTask.error.message}
-          </div>
+        {state.submitTask.isFaulted && (
+          <div className="text-red-500">{state.submitTask.error.message}</div>
         )}
         <div className="ce-block">
           <div className="ce-block__content">
@@ -138,7 +145,7 @@ export const NewPostForm = observer(() => {
               className="w-full font-bold text-xl placeholder-gray-300 bg-transparent outline-none"
               placeholder="Заголовок"
               type="text"
-              value={state.title}
+              value={state.title ?? ""}
               onChange={state.handleTitleChange}
               disabled={state.isPreview}
             />
@@ -175,7 +182,7 @@ export const NewPostForm = observer(() => {
             type="submit"
             className="px-3 py-1 rounded bg-blue-500 text-white cursor-pointer"
           >
-            Опубликовать
+            {state.isEditing ? "Сохранить" : "Опубликовать"}
           </button>
         </div>
       </form>

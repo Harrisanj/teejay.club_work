@@ -1,10 +1,8 @@
-import { HeartIcon } from "@heroicons/react/20/solid";
 import { CheckIcon, DocumentDuplicateIcon } from "@heroicons/react/24/outline";
 import { Fragment, memo, useState } from "react";
 
 import { Card } from "../components/card";
 import { NewComments } from "../components/comments";
-import { Link } from "../components/link";
 import { Page } from "../components/page";
 import { withInitialData } from "../utilities";
 
