@@ -1,7 +1,8 @@
 import { FC } from "react";
 
-import { formatDistanceShort, trpc, getAvatarUrl } from "../../../utilities";
+import { trpc, getAvatarUrl } from "../../../utilities";
 import { Link } from "../../link";
+import { RelativeDate } from "../../relative-date";
 
 export const NewComments: FC = () => {
   const commentsQuery = trpc.comments.getNew.useQuery(void 0, {
@@ -50,7 +51,7 @@ export const NewComments: FC = () => {
                   </svg>
                 )}
                 <div className="text-gray-500">
-                  {formatDistanceShort(comment.createdAt, new Date())}
+                  <RelativeDate date={comment.createdAt} isCompact={true} />
                 </div>
               </div>
             </div>

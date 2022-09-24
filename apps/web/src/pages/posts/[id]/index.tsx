@@ -1,10 +1,10 @@
 import { TPost } from "@teejay/api";
 import dynamic from "next/dynamic";
 
-import { NewComments } from "../../components/comments";
-import { Page } from "../../components/page";
-import { Post } from "../../components/posts";
-import { createServerSideTRPC, withInitialData } from "../../utilities";
+import { NewComments } from "../../../components/comments";
+import { Page } from "../../../components/page";
+import { Post } from "../../../components/posts";
+import { createServerSideTRPC, withInitialData } from "../../../utilities";
 
 import type {
   GetServerSidePropsContext,
@@ -14,7 +14,9 @@ import type {
 } from "next";
 
 const PostComments = dynamic(() =>
-  import("../../components/comments").then(({ PostComments }) => PostComments)
+  import("../../../components/comments").then(
+    ({ PostComments }) => PostComments
+  )
 );
 
 export const getServerSideProps = withInitialData(
