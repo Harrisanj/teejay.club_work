@@ -166,7 +166,7 @@ export const Menu: FC = () => {
           Telegram
         </Item>
       </Link>
-      <Link href="https://discord.gg/jHb89UPT" target="_blank">
+      <Link href="https://discord.gg/qr2uyNh2fE" target="_blank">
         <Item
           className="bg-transparent text-black opacity-75 hover:opacity-100 hover:bg-gray-200 shadow-none hover:!shadow-none"
           icon={
