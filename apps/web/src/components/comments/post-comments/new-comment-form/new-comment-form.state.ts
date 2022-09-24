@@ -1,9 +1,13 @@
-import { createCommentInput, InferInput } from "@teejay/api";
+import { createCommentInput, InferInput, InputError } from "@teejay/api";
 import { makeAutoObservable } from "mobx";
 import { NextRouter } from "next/router";
 import { ChangeEvent, FormEvent } from "react";
 
-import { Task, ClientSideTRPC } from "../../../../utilities";
+import {
+  Task,
+  ClientSideTRPC,
+  transformInputError,
+} from "../../../../utilities";
 
 import { Props } from "./new-comment-form.view";
 
@@ -43,6 +47,16 @@ class NewCommentFormState {
     return this.text.length < 3;
   }
 
+  private _errors: Record<string, string[]> = {};
+
+  get errors() {
+    return this._errors;
+  }
+
+  private setErrors(value: Record<string, string[]>) {
+    this._errors = value;
+  }
+
   createCommentTask = new Task(
     async (input: InferInput<typeof createCommentInput>) => {
       const comment = await this.trpc.comments.create.mutate(input);
@@ -52,16 +66,9 @@ class NewCommentFormState {
       this.text = "";
       this.createCommentTask.reset();
       this.router.push(
-        {
-          query: {
-            id: this.postId,
-            comment: comment.id,
-          },
-        },
+        { query: { id: this.postId, comment: comment.id } },
         undefined,
-        {
-          scroll: false,
-        }
+        { scroll: false }
       );
     }
   );
@@ -77,7 +84,11 @@ class NewCommentFormState {
       });
       await this.createCommentTask.run(input);
     } catch (error) {
-      console.error(error);
+      if (error instanceof InputError) {
+        this.setErrors(transformInputError(error));
+      } else {
+        throw error;
+      }
     }
   };
 }

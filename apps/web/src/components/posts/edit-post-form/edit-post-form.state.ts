@@ -49,7 +49,7 @@ export class EditPostFormState {
     this._title = value;
   }
 
-  handleTitleChange = (event: ChangeEvent<HTMLInputElement>) => {
+  handleTitleChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
     this._title = event.target.value;
   };
 

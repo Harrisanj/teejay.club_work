@@ -44,6 +44,7 @@ export const NewCommentForm = observer<Props>((props) => {
           "bg-gray-50 border-gray-100 rounded transition-all duration-300",
           {
             "!border-gray-200 shadow-inner": isFocused,
+            "ring-1 ring-red-500": state.text.trim().length > 2048,
           }
         )}
         onSubmit={state.handleSubmit}
@@ -61,14 +62,17 @@ export const NewCommentForm = observer<Props>((props) => {
         <div
           className={classNames({
             "opacity-0": !state.text.length,
-            "flex flex-row justify-end": true,
+            "flex flex-row flex-wrap justify-between": true,
           })}
         >
+          {"content" in state.errors && (
+            <div className="text-red-500">{state.errors["content"]}</div>
+          )}
           <button
             className={classNames({
               "bg-blue-300 cursor-default shadow-none":
                 state.isSubmitButtonDisabled,
-              "px-3 py-1 bg-blue-500 text-white rounded shadow cursor-pointer transition-all duration-300":
+              "ml-auto px-3 py-1 bg-blue-500 text-white rounded shadow cursor-pointer transition-all duration-300":
                 true,
             })}
             type="submit"
