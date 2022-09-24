@@ -16,6 +16,7 @@ import {
 } from "../../../utilities";
 import { Renderer } from "../../renderer";
 import { Spinner } from "../../spinner";
+import { TextArea } from "../../text-area";
 
 import { EditPostFormState } from "./edit-post-form.state";
 
@@ -140,19 +141,23 @@ export const EditPostForm = observer<Props>(({ post }) => {
         )}
         <div className="ce-block">
           <div className="ce-block__content">
-            <input
+            <TextArea
               id="title-input"
-              className="w-full font-bold text-xl placeholder-gray-300 bg-transparent outline-none"
+              className="w-full font-bold text-xl resize-none placeholder-gray-300 bg-transparent outline-none"
               placeholder="Заголовок"
-              type="text"
               value={state.title ?? ""}
               onChange={state.handleTitleChange}
               disabled={state.isPreview}
+              rows={1}
             />
           </div>
         </div>
         {"title" in state.errors && (
-          <div className="text-red-500">{state.errors["title"]}</div>
+          <div className="ce-block">
+            <div className="ce-block__content">
+              <div className="text-red-500">{state.errors["title"]}</div>
+            </div>
+          </div>
         )}
         {state.isPreview ? (
           <div className="ce-block">

@@ -1,14 +1,11 @@
 import { z } from "zod";
 
-import { id } from "@/utilities/zod-types";
+import { id, postContent, postTitle } from "@/utilities/zod-types";
 
 export const updatePostInput = z.object({
   id,
 
-  title: z.string(),
-  content: z.object({
-    // TODO: add validation for every block
-    blocks: z.array(z.any()),
-  }),
+  title: postTitle,
+  content: postContent,
   subsiteId: id.optional(),
 });
