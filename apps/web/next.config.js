@@ -8,6 +8,7 @@ const nextConfig = {
     ignoreDuringBuilds: true,
   },
   experimental: {
+    scrollRestoration: false,
     swcPlugins: [["next-superjson-plugin", { excluded: [] }]],
   },
 };
