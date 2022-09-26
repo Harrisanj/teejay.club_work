@@ -5,6 +5,6 @@ import { id } from "@/utilities/zod-types";
 export const getCommentsByPostInput = z
   .object({
     postId: id,
-    lastCreatedAt: z.date().optional(),
+    lastUpdatedAt: z.date().optional(),
   })
   .strict();

@@ -7,6 +7,7 @@ export const select = (userId: number) =>
     content: true,
     score: true,
     postId: true,
+    updatedAt: true,
     createdAt: true,
     post: {
       select: {

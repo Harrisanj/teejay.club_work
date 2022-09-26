@@ -22,7 +22,6 @@ export class Reddit {
 
   onPaste(event: PatternPasteEvent) {
     const matches = event.detail.data.match(REGEX);
-    console.log(matches);
     if (!matches) {
       return;
     }
