@@ -101,16 +101,16 @@ export const Comment = observer<Props>(({ state, comment, level = 1 }) => {
               <RelativeDate date={new Date(comment.createdAt)} />
             </Link>
           </div>
-          <CommentVote comment={comment} />
         </div>
         <div className="whitespace-pre-line break-words">{comment.content}</div>
-        <div className="flex flex-row">
+        <div className="flex flex-row justify-between items-end">
           <button
             className="text-sm text-gray-500 cursor-pointer"
             onClick={() => (state.replyTo = comment.id)}
           >
             Ответить
           </button>
+          <CommentVote comment={comment} />
         </div>
       </div>
       {state.replyTo === comment.id && (

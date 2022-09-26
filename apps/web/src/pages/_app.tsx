@@ -24,7 +24,6 @@ function App({ Component, pageProps: { initialData, ...pageProps } }: Props) {
   const [queryClient] = useState(() => new QueryClient());
   const [reactSideTRPC] = useState(() => createReactSideTRPC());
   const [clientSideTRPC] = useState(() => createClientSideTRPC());
-
   return (
     <trpc.Provider client={reactSideTRPC} queryClient={queryClient}>
       <QueryClientProvider client={queryClient}>
