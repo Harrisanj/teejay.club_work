@@ -3,7 +3,6 @@ import { enableStaticRendering } from "mobx-react-lite";
 import { AppProps } from "next/app";
 import { useState } from "react";
 
-import { useScrollRestoration } from "../hooks";
 import { RootStoreProvider } from "../stores/root.store";
 import {
   InitialData,
@@ -22,11 +21,10 @@ type Props = Omit<AppProps, "pageProps"> & {
 };
 
 function App({ Component, pageProps: { initialData, ...pageProps } }: Props) {
-  useScrollRestoration();
-
   const [queryClient] = useState(() => new QueryClient());
   const [reactSideTRPC] = useState(() => createReactSideTRPC());
   const [clientSideTRPC] = useState(() => createClientSideTRPC());
+
   return (
     <trpc.Provider client={reactSideTRPC} queryClient={queryClient}>
       <QueryClientProvider client={queryClient}>
