@@ -11,7 +11,7 @@ export const getOne = t.procedure
         id,
       }),
       z.object({
-        slug: z.string().min(3),
+        slug: z.string().min(1),
       }),
     ])
   )
