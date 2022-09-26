@@ -25,17 +25,13 @@ export const getServerSideProps = withInitialData(
   > => {
     if (
       !context.params ||
-      !context.params.slug ||
-      typeof context.params.slug !== "string"
+      typeof context.params.slug !== "string" ||
+      context.params.slug.length !== 0
     ) {
       return { notFound: true };
     }
 
     const slug = context.params.slug.trim();
-    if (slug.length < 3) {
-      return { notFound: true } as const;
-    }
-
     const trpc = createServerSideTRPC(context);
 
     try {
