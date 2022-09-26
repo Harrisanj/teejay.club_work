@@ -57,7 +57,7 @@ export const CommentVote = observer<Props>(({ comment }) => {
       </div>
       <button
         className={classNames({
-          "p-0.5 rounded-full transition-colors duration-500": true,
+          "p-1 rounded-full transition-colors duration-500": true,
           "cursor-default": !user,
           "hover:bg-gray-100 cursor-pointer": !!user,
         })}
