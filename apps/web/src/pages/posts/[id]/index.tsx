@@ -13,10 +13,12 @@ import type {
   NextPage,
 } from "next";
 
-const PostComments = dynamic(() =>
-  import("../../../components/comments").then(
-    ({ PostComments }) => PostComments
-  )
+const PostComments = dynamic(
+  () =>
+    import("../../../components/comments").then(
+      ({ PostComments }) => PostComments
+    ),
+  { ssr: false }
 );
 
 export const getServerSideProps = withInitialData(

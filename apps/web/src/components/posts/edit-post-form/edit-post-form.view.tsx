@@ -20,7 +20,9 @@ import { TextArea } from "../../text-area";
 
 import { EditPostFormState } from "./edit-post-form.state";
 
-const Editor = dynamic(() => import("../../editor").then((i) => i.Editor));
+const Editor = dynamic(() => import("../../editor").then((i) => i.Editor), {
+  ssr: false,
+});
 
 type Props = {
   post?: AppRouter["posts"]["getOne"]["_def"]["_output_out"];

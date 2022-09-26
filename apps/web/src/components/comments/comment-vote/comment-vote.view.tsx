@@ -2,7 +2,7 @@ import { TComment } from "@teejay/api";
 import { observer } from "mobx-react-lite";
 import { useMemo } from "react";
 
-import { classNames, useClientSideTRPC } from "../../../utilities";
+import { classNames, trpc, useClientSideTRPC } from "../../../utilities";
 
 import { CommentVoteState } from "./comment-vote.state";
 
@@ -14,19 +14,22 @@ export const CommentVote = observer<Props>(({ comment }) => {
     () => new CommentVoteState(trpcClient, comment),
     [comment, trpcClient]
   );
+  const userQuery = trpc.users.getMe.useQuery();
+  const user = userQuery.data ?? undefined;
+  console.log(user);
   return (
     <div className="ml-auto flex flex-row items-center gap-x-1 text-sm">
       <button
         className={classNames({
-          "p-1 cursor-pointer rounded-full hover:bg-gray-100 transition-colors duration-500":
-            true,
-          "hover:bg-red-100": state.vote?.sign === -1,
+          "p-1 rounded-full transition-colors duration-500": true,
+          "cursor-default": !user,
+          "hover:bg-gray-100 cursor-pointer": !!user,
         })}
-        onClick={state.handleDownvoteClick}
+        onClick={user && state.handleDownvoteClick}
       >
         <svg
           className={classNames({
-            "w-5 h-5 transition-colors duration-500": true,
+            "w-4 h-4 transition-colors duration-500": true,
             "stroke-black": state.vote?.sign !== -1,
             "stroke-red-600": state.vote?.sign === -1,
           })}
@@ -44,7 +47,7 @@ export const CommentVote = observer<Props>(({ comment }) => {
       </button>
       <div
         className={classNames({
-          " font-medium transition-colors duration-500": true,
+          "text-sm transition-colors duration-500": true,
           "text-green-600": state.comment.score > 0,
           "text-red-600": state.comment.score < 0,
         })}
@@ -55,15 +58,15 @@ export const CommentVote = observer<Props>(({ comment }) => {
       </div>
       <button
         className={classNames({
-          "p-1 cursor-pointer rounded-full hover:bg-gray-100 transition-colors duration-500":
-            true,
-          "hover:bg-green-100": state.vote?.sign === 1,
+          "p-0.5 rounded-full transition-colors duration-500": true,
+          "cursor-default": !user,
+          "hover:bg-gray-100 cursor-pointer": !!user,
         })}
-        onClick={state.handleUpvoteClick}
+        onClick={user && state.handleUpvoteClick}
       >
         <svg
           className={classNames({
-            "w-5 h-5 transition-colors duration-500": true,
+            "w-4 h-4 transition-colors duration-500": true,
             "stroke-black": state.vote?.sign !== 1,
             "stroke-green-600": state.vote?.sign === 1,
           })}
