@@ -16,7 +16,6 @@ export const CommentVote = observer<Props>(({ comment }) => {
   );
   const userQuery = trpc.users.getMe.useQuery();
   const user = userQuery.data ?? undefined;
-  console.log(user);
   return (
     <div className="ml-auto flex flex-row items-center gap-x-1 text-sm">
       <button

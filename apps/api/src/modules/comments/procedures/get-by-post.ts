@@ -6,7 +6,7 @@ import { t } from "@/trpc";
 
 export const getByPost = t.procedure
   .input(getCommentsByPostInput)
-  .query(async ({ input: { postId, lastCreatedAt }, ctx: { user } }) => {
+  .query(async ({ input: { postId, lastUpdatedAt }, ctx: { user } }) => {
     const where = {
       post: { id: postId, isPublished: true },
     };
@@ -15,7 +15,7 @@ export const getByPost = t.procedure
       select: select(user?.id ?? -1),
       where: {
         ...where,
-        createdAt: { gt: lastCreatedAt },
+        updatedAt: { gt: lastUpdatedAt },
       },
       orderBy: { createdAt: "asc" },
     });

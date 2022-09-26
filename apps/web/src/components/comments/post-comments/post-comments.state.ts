@@ -31,13 +31,13 @@ export class PostCommentsState {
   private _fetchTask = new Task(async () => {
     const result = await this.trpc.comments.getByPost.query({
       postId: this.postId,
-      lastCreatedAt: this._lastCreatedAt,
+      lastUpdatedAt: this._lastUpdatedAt,
     });
 
     runInAction(() => {
       result.data.forEach((comment) => {
         this._map[comment.id] = comment;
-        this._lastCreatedAt = max([this._lastCreatedAt, comment.createdAt]);
+        this._lastUpdatedAt = max([this._lastUpdatedAt, comment.updatedAt]);
       });
 
       this._total = result.meta.total;
@@ -49,7 +49,7 @@ export class PostCommentsState {
     this._fetchTask.run();
   }
 
-  private _lastCreatedAt: Date = new Date(0);
+  private _lastUpdatedAt: Date = new Date(0);
 
   private _total = 0;
 
