@@ -26,7 +26,7 @@ export const getServerSideProps = withInitialData(
     if (
       !context.params ||
       typeof context.params.slug !== "string" ||
-      context.params.slug.length !== 0
+      !context.params.slug.length
     ) {
       return { notFound: true };
     }
