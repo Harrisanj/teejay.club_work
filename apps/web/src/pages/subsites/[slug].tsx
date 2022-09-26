@@ -36,8 +36,7 @@ export const getServerSideProps = withInitialData(
 
     try {
       const subsite = await trpc.subsites.getOne.query({ slug });
-      const posts = await trpc.posts.getTop.query({
-        interval: "week",
+      const posts = await trpc.posts.getNew.query({
         subsiteId: subsite.id,
       });
       return { props: { subsite, posts } };
