@@ -4,7 +4,11 @@ import dynamic from "next/dynamic";
 import { NewComments } from "../../../components/comments";
 import { Page } from "../../../components/page";
 import { Post } from "../../../components/posts";
-import { createServerSideTRPC, withInitialData } from "../../../utilities";
+import {
+  createServerSideTRPC,
+  trpc,
+  withInitialData,
+} from "../../../utilities";
 
 import type {
   GetServerSidePropsContext,
@@ -52,7 +56,13 @@ export const getServerSideProps = withInitialData(
 
 type Props = InferGetServerSidePropsType<typeof getServerSideProps>;
 
-const PostPage: NextPage<Props> = ({ post }) => {
+const PostPage: NextPage<Props> = ({ post: initialData }) => {
+  const postQuery = trpc.posts.getOne.useQuery(
+    { id: initialData.id },
+    { initialData, refetchInterval: 5000 }
+  );
+  const post = postQuery.data;
+  if (!post) return null;
   return (
     <Page title={post.title || `Пост от ${post.author.name}`} description="">
       <div className="md:max-w-2xl w-full md:mx-auto">

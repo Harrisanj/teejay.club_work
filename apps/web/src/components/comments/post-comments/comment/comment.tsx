@@ -46,10 +46,16 @@ export const Comment = observer<Props>(({ state, comment, level = 1 }) => {
     user.id === comment.author.id &&
     isBefore(now, addMinutes(comment.createdAt, 15));
 
+  const trpcContext = trpc.useContext();
+
   const handleSubmit = async () => {
     state.replyTo = null;
     setIsEditing(false);
-    await state.fetch();
+    await Promise.all([
+      trpcContext.comments.getNew.refetch(),
+      trpcContext.posts.getOne.refetch(),
+      state.fetch(),
+    ]);
   };
 
   const handleReplyClick = () => {
