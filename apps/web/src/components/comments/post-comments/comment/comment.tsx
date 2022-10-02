@@ -1,7 +1,7 @@
 import { Menu, Transition } from "@headlessui/react";
 import { EllipsisHorizontalIcon, PencilIcon } from "@heroicons/react/20/solid";
 import { ArrowUpIcon } from "@heroicons/react/24/outline";
-import { addMinutes, isBefore, isSameSecond } from "date-fns";
+import { addMinutes, isBefore, isEqual } from "date-fns";
 import { observer } from "mobx-react-lite";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
@@ -137,7 +137,7 @@ export const Comment = observer<Props>(({ state, comment, level = 1 }) => {
               >
                 <RelativeDate date={new Date(comment.createdAt)} />
               </Link>
-              {!isSameSecond(comment.createdAt, comment.updatedAt) && (
+              {!isEqual(comment.createdAt, comment.updatedAt) && (
                 <time dateTime={comment.updatedAt.toISOString()}>
                   <PencilIcon className="w-2.5 h-2.5 fill-gray-500" />
                 </time>
