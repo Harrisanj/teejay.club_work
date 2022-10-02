@@ -1,4 +1,8 @@
-import { createCommentInput, InferInput, InputError } from "@teejay/api";
+import {
+  createCommentInput,
+  InputError,
+  updateCommentInput,
+} from "@teejay/api";
 import { makeAutoObservable } from "mobx";
 import { NextRouter } from "next/router";
 import { ChangeEvent, FormEvent } from "react";
@@ -9,9 +13,9 @@ import {
   transformInputError,
 } from "../../../../utilities";
 
-import { Props } from "./new-comment-form.view";
+import { Props } from "./edit-comment-form.view";
 
-class NewCommentFormState {
+class EditCommentFormState {
   constructor(
     public readonly trpc: ClientSideTRPC,
     public readonly router: NextRouter
@@ -21,12 +25,24 @@ class NewCommentFormState {
 
   private postId: number | undefined = undefined;
   private parentId: number | undefined = undefined;
-  private onCreate: (() => void) | undefined = undefined;
+  private onSubmit: (() => void) | undefined = undefined;
 
-  onUpdate({ postId, parentId, onCreate }: Props) {
+  onUpdate({ id, text, postId, parentId, onSubmit }: Props) {
+    this.id = id;
+    this.text = text ?? "";
     this.postId = postId;
     this.parentId = parentId;
-    this.onCreate = onCreate;
+    this.onSubmit = onSubmit;
+  }
+
+  private _id?: number = undefined;
+
+  get id() {
+    return this._id;
+  }
+
+  private set id(value: number | undefined) {
+    this._id = value;
   }
 
   private _text = "";
@@ -57,40 +73,52 @@ class NewCommentFormState {
     this._errors = value;
   }
 
-  createCommentTask = new Task(
-    async (input: InferInput<typeof createCommentInput>) => {
-      const comment = await this.trpc.comments.create.mutate(input);
+  get isEditing() {
+    return this.id !== undefined;
+  }
 
-      this.onCreate?.();
+  submitTask = new Task(async () => {
+    try {
+      let comment;
+      if (this.id) {
+        const input = updateCommentInput.parse({
+          id: this.id,
+          content: this.text.trim(),
+        });
+        comment = await this.trpc.comments.update.mutate(input);
+      } else {
+        const input = createCommentInput.parse({
+          postId: this.postId,
+          parentId: this.parentId,
+          content: this.text.trim(),
+        });
+        comment = await this.trpc.comments.create.mutate(input);
+      }
+
+      this.onSubmit?.();
 
       this.text = "";
-      this.createCommentTask.reset();
+      this.submitTask.reset();
       this.router.push(
         { query: { id: this.postId, comment: comment.id } },
         undefined,
         { scroll: false }
       );
-    }
-  );
-
-  handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
-    try {
-      const input = createCommentInput.parse({
-        postId: this.postId,
-        parentId: this.parentId,
-        content: this.text.trim(),
-      });
-      await this.createCommentTask.run(input);
     } catch (error) {
+      console.log(error);
       if (error instanceof InputError) {
         this.setErrors(transformInputError(error));
       } else {
         throw error;
       }
     }
+  });
+
+  handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    return this.submitTask.run();
   };
 }
 
-export default NewCommentFormState;
+export default EditCommentFormState;

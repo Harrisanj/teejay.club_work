@@ -6,19 +6,21 @@ import { classNames, useClientSideTRPC } from "../../../../utilities";
 import { Spinner } from "../../../spinner";
 import { TextArea } from "../../../text-area";
 
-import NewCommentFormState from "./new-comment-form.state";
+import EditCommentFormState from "./edit-comment-form.state";
 
 export type Props = {
+  id?: number;
+  text?: string;
   postId: number;
   parentId?: number;
   level?: number;
-  onCreate?: () => void;
+  onSubmit?: () => void;
 };
 
-export const NewCommentForm = observer<Props>((props) => {
+export const EditCommentForm = observer<Props>((props) => {
   const trpc = useClientSideTRPC();
   const router = useRouter();
-  const [state] = useState(() => new NewCommentFormState(trpc, router));
+  const [state] = useState(() => new EditCommentFormState(trpc, router));
   useEffect(() => {
     state.onUpdate(props);
   }, [state, props]);
@@ -49,10 +51,10 @@ export const NewCommentForm = observer<Props>((props) => {
         )}
         onSubmit={state.handleSubmit}
       >
-        <Spinner isSpinning={state.createCommentTask.isRunning} />
+        <Spinner isSpinning={state.submitTask.isRunning} />
         <TextArea
           className="min-h-[24px] resize-none bg-transparent outline-none transition-all duration-100"
-          placeholder="Написать комментарий..."
+          placeholder={state.isEditing ? "" : "Написать комментарий..."}
           value={state.text}
           onChange={state.handleTextChange}
           onFocus={() => setIsFocused(true)}
@@ -77,7 +79,7 @@ export const NewCommentForm = observer<Props>((props) => {
             })}
             type="submit"
           >
-            Отправить
+            {state.isEditing ? "Сохранить" : "Отправить"}
           </button>
         </div>
       </form>

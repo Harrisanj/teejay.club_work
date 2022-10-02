@@ -5,8 +5,8 @@ import { PluralForm } from "../../plural-form";
 import { Spinner } from "../../spinner";
 
 import { CommentList } from "./comment-list/comment-list";
+import { EditCommentForm } from "./edit-comment-form";
 import { useScrollToComment } from "./hooks";
-import { NewCommentForm } from "./new-comment-form";
 import { PostCommentsState } from "./post-comments.state";
 
 type Props = {
@@ -29,7 +29,7 @@ export const PostCommentsView = observer<Props>(({ state }) => {
       </div>
       <div className="relative mt-3 flex flex-col gap-y-2">
         <CommentList state={state} comments={state.tree} />
-        <NewCommentForm postId={state.postId} onCreate={state.fetch} />
+        <EditCommentForm postId={state.postId} onSubmit={state.fetch} />
       </div>
     </Card>
   );

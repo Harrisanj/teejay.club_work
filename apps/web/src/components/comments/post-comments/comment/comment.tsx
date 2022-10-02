@@ -1,14 +1,17 @@
+import { Menu, Transition } from "@headlessui/react";
+import { EllipsisHorizontalIcon, PencilIcon } from "@heroicons/react/20/solid";
 import { ArrowUpIcon } from "@heroicons/react/24/outline";
+import { addMinutes, isBefore, isSameSecond } from "date-fns";
 import { observer } from "mobx-react-lite";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
-import { useRef } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 
-import { classNames, getAvatarUrl } from "../../../../utilities";
+import { classNames, getAvatarUrl, trpc } from "../../../../utilities";
 import { Link } from "../../../link";
 import { CommentVote } from "../../comment-vote";
 import { CommentList } from "../comment-list";
-import { NewCommentForm } from "../new-comment-form";
+import { EditCommentForm } from "../edit-comment-form";
 import { PostCommentsState } from "../post-comments.state";
 import { TComment } from "../type";
 
@@ -26,10 +29,37 @@ type Props = {
 export const Comment = observer<Props>(({ state, comment, level = 1 }) => {
   const ref = useRef<HTMLDivElement>(null);
   const router = useRouter();
+  const [isEditing, setIsEditing] = useState(false);
+  const { data: user } = trpc.users.getMe.useQuery();
 
-  const handleCreate = async () => {
+  const [now, setNow] = useState(new Date());
+
+  useEffect(() => {
+    const intervalId = window.setInterval(() => setNow(new Date()), 15 * 1000);
+    return () => {
+      window.clearInterval(intervalId);
+    };
+  }, []);
+
+  const canEdit =
+    !!user &&
+    user.id === comment.author.id &&
+    isBefore(now, addMinutes(comment.createdAt, 15));
+
+  const handleSubmit = async () => {
     state.replyTo = null;
+    setIsEditing(false);
     await state.fetch();
+  };
+
+  const handleReplyClick = () => {
+    state.replyTo = comment.id;
+    setIsEditing(false);
+  };
+
+  const handleEditClick = () => {
+    state.replyTo = null;
+    setIsEditing(true);
   };
 
   return (
@@ -93,32 +123,86 @@ export const Comment = observer<Props>(({ state, comment, level = 1 }) => {
                 </Link>
               )}
             </div>
-            <Link
-              scroll={false}
-              href={`/posts/${comment.postId}?comment=${comment.id}`}
-              className="text-xs text-gray-500"
-            >
-              <RelativeDate date={new Date(comment.createdAt)} />
-            </Link>
+            <div className="flex flex-row items-center gap-x-1">
+              <Link
+                scroll={false}
+                href={`/posts/${comment.postId}?comment=${comment.id}`}
+                className="text-xs text-gray-500"
+              >
+                <RelativeDate date={new Date(comment.createdAt)} />
+              </Link>
+              {!isSameSecond(comment.createdAt, comment.updatedAt) && (
+                <time dateTime={comment.updatedAt.toISOString()}>
+                  <PencilIcon className="w-2.5 h-2.5 fill-gray-500" />
+                </time>
+              )}
+            </div>
           </div>
         </div>
         <div className="whitespace-pre-line break-words">{comment.content}</div>
-        <div className="flex flex-row justify-between items-end">
+        <div className="flex flex-row items-end gap-x-1">
           <button
             className="text-sm text-gray-500 cursor-pointer"
-            onClick={() => (state.replyTo = comment.id)}
+            onClick={handleReplyClick}
           >
             Ответить
           </button>
-          <CommentVote comment={comment} />
+          {canEdit && (
+            <Menu as="div" className="relative">
+              <Menu.Button className="flex items-center p-0.5">
+                <EllipsisHorizontalIcon className="w-4 h-4" />
+              </Menu.Button>
+              <Transition
+                as={Fragment}
+                enter="transition ease-out duration-100"
+                enterFrom="transform opacity-0 scale-95"
+                enterTo="transform opacity-100 scale-100"
+                leave="transition ease-in duration-75"
+                leaveFrom="transform opacity-100 scale-100"
+                leaveTo="transform opacity-0 scale-95"
+              >
+                <Menu.Items
+                  className={classNames(
+                    "absolute -left-2 origin-top-left mt-1 max-h-56 z-10",
+                    "bg-white shadow-lg ring-1 ring-amber-500 ring-opacity-50 rounded-md",
+                    "overflow-auto focus:outline-none"
+                  )}
+                >
+                  <Menu.Item
+                    as="div"
+                    className={classNames(
+                      "flex flex-row gap-x-2 items-center px-4 py-2 text-sm whitespace-nowrap",
+                      "text-gray-900 hover:bg-gray-100 cursor-pointer"
+                    )}
+                    onClick={handleEditClick}
+                  >
+                    Редактировать
+                  </Menu.Item>
+                </Menu.Items>
+              </Transition>
+            </Menu>
+          )}
+          <div className="ml-auto">
+            <CommentVote comment={comment} />
+          </div>
         </div>
       </div>
-      {state.replyTo === comment.id && (
-        <NewCommentForm
+      {isEditing && (
+        <EditCommentForm
+          id={comment.id}
+          text={comment.content}
           postId={comment.postId}
           parentId={comment.id}
-          onCreate={handleCreate}
           level={level}
+          onSubmit={handleSubmit}
+        />
+      )}
+      {state.replyTo === comment.id && (
+        <EditCommentForm
+          postId={comment.postId}
+          parentId={comment.id}
+          level={level}
+          onSubmit={handleSubmit}
         />
       )}
       {!!comment.children.length && (
