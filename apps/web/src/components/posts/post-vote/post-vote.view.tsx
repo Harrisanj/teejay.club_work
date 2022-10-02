@@ -2,7 +2,7 @@ import { TPost } from "@teejay/api";
 import { observer } from "mobx-react-lite";
 import { useMemo } from "react";
 
-import { classNames, useClientSideTRPC } from "../../../utilities";
+import { classNames, trpc, useClientSideTRPC } from "../../../utilities";
 
 import { PostVoteState } from "./post-vote.state";
 
@@ -14,21 +14,34 @@ export const PostVote = observer<Props>(({ post }) => {
     () => new PostVoteState(trpcClient, post),
     [post, trpcClient]
   );
+
+  const userQuery = trpc.users.getMe.useQuery();
+  const user = userQuery.data ?? undefined;
+
+  const isUserLoggedIn = !!user;
+  const isClickable = isUserLoggedIn && post.author.id !== user.id;
+  const handleDownvoteClick = isClickable
+    ? state.handleDownvoteClick
+    : undefined;
+  const handleUpvoteClick = isClickable ? state.handleUpvoteClick : undefined;
+
   return (
-    <div className="ml-auto flex flex-row items-center text-sm">
+    <div className="ml-auto flex flex-row items-center gap-x-0.5 text-sm">
       <button
         className={classNames({
-          "p-1 cursor-pointer rounded-full hover:bg-gray-100 transition-colors duration-500":
-            true,
-          "hover:bg-red-100": state.vote?.sign === -1,
+          "p-1 rounded-full transition-colors duration-500": true,
+          "hover:bg-gray-100 cursor-pointer": isClickable,
+          "cursor-default": !isClickable,
+          hidden: !isUserLoggedIn,
         })}
-        onClick={state.handleDownvoteClick}
+        onClick={handleDownvoteClick}
       >
         <svg
           className={classNames({
             "w-5 h-5 transition-colors duration-500": true,
             "stroke-black": state.vote?.sign !== -1,
             "stroke-red-600": state.vote?.sign === -1,
+            "!stroke-gray-300": !isClickable,
           })}
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
@@ -55,17 +68,19 @@ export const PostVote = observer<Props>(({ post }) => {
       </div>
       <button
         className={classNames({
-          "p-1 cursor-pointer rounded-full hover:bg-gray-100 transition-colors duration-500":
-            true,
-          "hover:bg-green-100": state.vote?.sign === 1,
+          "p-1 rounded-full transition-colors duration-500": true,
+          "hover:bg-gray-100 cursor-pointer": isClickable,
+          "cursor-default": !isClickable,
+          hidden: !isUserLoggedIn,
         })}
-        onClick={state.handleUpvoteClick}
+        onClick={handleUpvoteClick}
       >
         <svg
           className={classNames({
             "w-5 h-5 transition-colors duration-500": true,
             "stroke-black": state.vote?.sign !== 1,
             "stroke-green-600": state.vote?.sign === 1,
+            "!stroke-gray-300": !isClickable,
           })}
           strokeWidth={2}
           xmlns="http://www.w3.org/2000/svg"

@@ -1,3 +1,5 @@
+import { TRPCError } from "@trpc/server";
+
 import { voteCommentInput } from "../inputs";
 
 import { blockGuard } from "@/guards";
@@ -11,11 +13,12 @@ export const vote = t.procedure
   .mutation(async ({ input: { commentId, sign }, ctx: { user } }) => {
     const userId = user.id;
 
-    const post = await prisma.comment.findFirstOrThrow({
+    const comment = await prisma.comment.findFirstOrThrow({
       where: { id: commentId },
       select: {
         id: true,
         score: true,
+        authorId: true,
         votes: {
           where: { commentId, userId },
           select: commentVotes.select(),
@@ -23,9 +26,13 @@ export const vote = t.procedure
       },
     });
 
+    if (comment.authorId === userId) {
+      throw new TRPCError({ code: "FORBIDDEN" });
+    }
+
     // CREATE
     // 42 -> +1 -> 43
-    if (!post.votes.length) {
+    if (!comment.votes.length) {
       return prisma.comment.update({
         where: { id: commentId },
         data: {
@@ -36,7 +43,7 @@ export const vote = t.procedure
       });
     }
 
-    const vote = post.votes[0];
+    const vote = comment.votes[0];
 
     // DELETE
     // 42 -> +1 -> 43 -> +1 ->42
