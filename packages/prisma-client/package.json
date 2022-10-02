@@ -13,16 +13,16 @@
   },
   "dependencies": {
     "@faker-js/faker": "^7.5.0",
-    "@prisma/client": "^4.3.1",
+    "@prisma/client": "^4.4.0",
     "bcrypt": "^5.0.1",
-    "date-fns": "^2.29.2",
-    "prisma": "^4.3.1"
+    "date-fns": "^2.29.3",
+    "prisma": "^4.4.0"
   },
   "devDependencies": {
     "@teejay/tsconfig": "workspace:*",
     "@types/bcrypt": "^5.0.0",
-    "@types/node": "^17.0.12",
+    "@types/node": "^17.0.45",
     "ts-node": "^10.9.1",
-    "typescript": "^4.8.2"
+    "typescript": "^4.8.4"
   }
 }
