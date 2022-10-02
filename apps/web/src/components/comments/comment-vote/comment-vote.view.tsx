@@ -14,23 +14,34 @@ export const CommentVote = observer<Props>(({ comment }) => {
     () => new CommentVoteState(trpcClient, comment),
     [comment, trpcClient]
   );
+
   const userQuery = trpc.users.getMe.useQuery();
   const user = userQuery.data ?? undefined;
+
+  const isUserLoggedIn = !!user;
+  const isClickable = isUserLoggedIn && comment.author.id !== user.id;
+  const handleDownvoteClick = isClickable
+    ? state.handleDownvoteClick
+    : undefined;
+  const handleUpvoteClick = isClickable ? state.handleUpvoteClick : undefined;
+
   return (
-    <div className="ml-auto flex flex-row items-center gap-x-1 text-sm">
+    <div className="ml-auto flex flex-row items-center gap-x-0.5 text-sm">
       <button
         className={classNames({
           "p-1 rounded-full transition-colors duration-500": true,
-          "cursor-default": !user,
-          "hover:bg-gray-100 cursor-pointer": !!user,
+          "hover:bg-gray-100 cursor-pointer": isClickable,
+          "cursor-default": !isClickable,
+          hidden: !isUserLoggedIn,
         })}
-        onClick={user && state.handleDownvoteClick}
+        onClick={handleDownvoteClick}
       >
         <svg
           className={classNames({
             "w-4 h-4 transition-colors duration-500": true,
             "stroke-black": state.vote?.sign !== -1,
             "stroke-red-600": state.vote?.sign === -1,
+            "!stroke-gray-300": !isClickable,
           })}
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
@@ -58,16 +69,18 @@ export const CommentVote = observer<Props>(({ comment }) => {
       <button
         className={classNames({
           "p-1 rounded-full transition-colors duration-500": true,
-          "cursor-default": !user,
-          "hover:bg-gray-100 cursor-pointer": !!user,
+          "hover:bg-gray-100 cursor-pointer": isClickable,
+          "cursor-default": !isClickable,
+          hidden: !isUserLoggedIn,
         })}
-        onClick={user && state.handleUpvoteClick}
+        onClick={handleUpvoteClick}
       >
         <svg
           className={classNames({
             "w-4 h-4 transition-colors duration-500": true,
             "stroke-black": state.vote?.sign !== 1,
             "stroke-green-600": state.vote?.sign === 1,
+            "!stroke-gray-300": !isClickable,
           })}
           strokeWidth={2}
           xmlns="http://www.w3.org/2000/svg"
