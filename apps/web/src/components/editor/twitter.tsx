@@ -3,9 +3,6 @@ import { createRoot, Root } from "react-dom/client";
 
 import { TwitterEmbed } from "../embeds";
 
-const REGEX =
-  /^https?:\/\/twitter\.com\/(?:#!\/)?(\w+)\/status(?:es)?\/(\d+?.*)?$/;
-
 type Data = { id: string };
 
 export class Twitter {
@@ -18,15 +15,32 @@ export class Twitter {
   }
 
   static get pasteConfig() {
-    return { patterns: { id: REGEX } };
+    return {
+      patterns: {
+        id: /^https?:\/\/twitter\.com\/[^ ]*$/,
+      },
+    };
   }
 
   onPaste(event: PatternPasteEvent) {
-    const matches = event.detail.data.match(REGEX);
+    let url;
+    try {
+      url = new URL(event.detail.data);
+    } catch (error) {
+      return;
+    }
+
+    if (url.hostname !== "twitter.com") {
+      return;
+    }
+
+    const matches = url.pathname.match(/\/.+\/status\/(\d+)/);
+
     if (!matches) {
       return;
     }
-    this.data = { id: matches[2] };
+
+    this.data = { id: matches[1] };
     this.renderChildren();
   }
 
