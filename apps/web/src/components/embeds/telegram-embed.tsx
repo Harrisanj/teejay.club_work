@@ -49,6 +49,7 @@ export const TelegramEmbed = memo<Props>(({ id }) => {
         width="100%"
         height={height}
         className="overflow-hidden border-none min-w-[320px]"
+        allowFullScreen={true}
         // eslint-disable-next-line react/no-unknown-property
         scrolling="no"
       />
