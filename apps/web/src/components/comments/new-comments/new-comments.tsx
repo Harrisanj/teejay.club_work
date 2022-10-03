@@ -63,7 +63,7 @@ export const NewComments: FC = () => {
                 WebkitLineClamp: 3,
               }}
             >
-              {comment.content}
+              {comment.text}
             </div>
             {comment.post.title && (
               <div className="font-medium overflow-hidden text-ellipsis whitespace-nowrap">

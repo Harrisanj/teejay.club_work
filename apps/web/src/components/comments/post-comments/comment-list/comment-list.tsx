@@ -1,5 +1,4 @@
-import { observer } from "mobx-react-lite";
-import { useState } from "react";
+import { memo, useState } from "react";
 
 import { Comment } from "../comment";
 import { PostCommentsState } from "../post-comments.state";
@@ -11,7 +10,7 @@ type Props = {
   level?: number;
 };
 
-export const CommentList = observer<Props>(({ state, comments, level = 1 }) => {
+export const CommentList = memo<Props>(({ state, comments, level = 1 }) => {
   const [isMinimized, setIsMinimized] = useState(false);
   return (
     <div className="relative">

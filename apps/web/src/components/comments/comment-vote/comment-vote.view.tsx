@@ -1,47 +1,31 @@
 import { TComment } from "@teejay/api";
-import { observer } from "mobx-react-lite";
-import { useMemo } from "react";
+import { memo } from "react";
 
-import { classNames, trpc, useClientSideTRPC } from "../../../utilities";
+import { classNames } from "../../../utilities";
 
-import { CommentVoteState } from "./comment-vote.state";
+import { useCommentVoteState } from "./comment-vote.state";
 
-type Props = { comment: TComment };
+export type Props = { comment: TComment };
 
-export const CommentVote = observer<Props>(({ comment }) => {
-  const trpcClient = useClientSideTRPC();
-  const state = useMemo(
-    () => new CommentVoteState(trpcClient, comment),
-    [comment, trpcClient]
-  );
-
-  const userQuery = trpc.users.getMe.useQuery();
-  const user = userQuery.data ?? undefined;
-
-  const isUserLoggedIn = !!user;
-  const isClickable = isUserLoggedIn && comment.author.id !== user.id;
-  const handleDownvoteClick = isClickable
-    ? state.handleDownvoteClick
-    : undefined;
-  const handleUpvoteClick = isClickable ? state.handleUpvoteClick : undefined;
-
+export const CommentVote = memo<Props>((props) => {
+  const state = useCommentVoteState(props);
   return (
     <div className="ml-auto flex flex-row items-center gap-x-0.5 text-sm">
       <button
         className={classNames({
           "p-1 rounded-full transition-colors duration-500": true,
-          "hover:bg-gray-100 cursor-pointer": isClickable,
-          "cursor-default": !isClickable,
-          hidden: !isUserLoggedIn,
+          "hover:bg-gray-100 cursor-pointer": state.isClickable,
+          "cursor-default": !state.isClickable,
+          hidden: !state.isUserLoggedIn,
         })}
-        onClick={handleDownvoteClick}
+        onClick={state.handleDownvoteClick}
       >
         <svg
           className={classNames({
             "w-4 h-4 transition-colors duration-500": true,
-            "stroke-black": state.vote?.sign !== -1,
-            "stroke-red-600": state.vote?.sign === -1,
-            "!stroke-gray-300": !isClickable,
+            "stroke-black": state.comment.votes[0]?.sign !== -1,
+            "stroke-red-600": state.comment.votes[0]?.sign === -1,
+            "!stroke-gray-300": !state.isClickable,
           })}
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
@@ -69,18 +53,18 @@ export const CommentVote = observer<Props>(({ comment }) => {
       <button
         className={classNames({
           "p-1 rounded-full transition-colors duration-500": true,
-          "hover:bg-gray-100 cursor-pointer": isClickable,
-          "cursor-default": !isClickable,
-          hidden: !isUserLoggedIn,
+          "hover:bg-gray-100 cursor-pointer": state.isClickable,
+          "cursor-default": !state.isClickable,
+          hidden: !state.isUserLoggedIn,
         })}
-        onClick={handleUpvoteClick}
+        onClick={state.handleUpvoteClick}
       >
         <svg
           className={classNames({
             "w-4 h-4 transition-colors duration-500": true,
-            "stroke-black": state.vote?.sign !== 1,
-            "stroke-green-600": state.vote?.sign === 1,
-            "!stroke-gray-300": !isClickable,
+            "stroke-black": state.comment.votes[0]?.sign !== 1,
+            "stroke-green-600": state.comment.votes[0]?.sign === 1,
+            "!stroke-gray-300": !state.isClickable,
           })}
           strokeWidth={2}
           xmlns="http://www.w3.org/2000/svg"
@@ -97,3 +81,5 @@ export const CommentVote = observer<Props>(({ comment }) => {
     </div>
   );
 });
+
+CommentVote.displayName = "CommentVote";

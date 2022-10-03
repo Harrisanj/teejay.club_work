@@ -1,12 +1,10 @@
-import { observer } from "mobx-react-lite";
-import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { memo, useState } from "react";
 
-import { classNames, useClientSideTRPC } from "../../../../utilities";
+import { classNames } from "../../../../utilities";
 import { Spinner } from "../../../spinner";
 import { TextArea } from "../../../text-area";
 
-import EditCommentFormState from "./edit-comment-form.state";
+import { useEditCommentState } from "./edit-comment-form.state";
 
 export type Props = {
   id?: number;
@@ -17,14 +15,8 @@ export type Props = {
   onSubmit?: () => void;
 };
 
-export const EditCommentForm = observer<Props>((props) => {
-  const trpc = useClientSideTRPC();
-  const router = useRouter();
-  const [state] = useState(() => new EditCommentFormState(trpc, router));
-  useEffect(() => {
-    state.onUpdate(props);
-  }, [state, props]);
-
+export const EditCommentForm = memo<Props>((props) => {
+  const state = useEditCommentState(props);
   const { level = 0 } = props;
   const [isFocused, setIsFocused] = useState<boolean>(false);
   return (
@@ -51,7 +43,7 @@ export const EditCommentForm = observer<Props>((props) => {
         )}
         onSubmit={state.handleSubmit}
       >
-        <Spinner isSpinning={state.submitTask.isRunning} />
+        <Spinner isSpinning={state.isLoading} />
         <TextArea
           className="min-h-[24px] resize-none bg-transparent outline-none transition-all duration-100"
           placeholder={state.isEditing ? "" : "Написать комментарий..."}
@@ -60,20 +52,18 @@ export const EditCommentForm = observer<Props>((props) => {
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
         />
-
         <div
           className={classNames({
             "opacity-0": !state.text.length,
             "flex flex-row flex-wrap justify-between": true,
           })}
         >
-          {"content" in state.errors && (
-            <div className="text-red-500">{state.errors["content"]}</div>
+          {"text" in state.errors && (
+            <div className="text-red-500">{state.errors["text"]}</div>
           )}
           <button
             className={classNames({
-              "bg-blue-300 cursor-default shadow-none":
-                state.isSubmitButtonDisabled,
+              "bg-blue-300 cursor-default shadow-none": state.isSubmitDisabled,
               "ml-auto px-3 py-1 bg-blue-500 text-white rounded shadow cursor-pointer transition-all duration-300":
                 true,
             })}
@@ -86,3 +76,5 @@ export const EditCommentForm = observer<Props>((props) => {
     </div>
   );
 });
+
+EditCommentForm.displayName = "EditCommentForm";

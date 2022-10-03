@@ -2,10 +2,9 @@ import { Menu, Transition } from "@headlessui/react";
 import { EllipsisHorizontalIcon, PencilIcon } from "@heroicons/react/20/solid";
 import { ArrowUpIcon } from "@heroicons/react/24/outline";
 import { addMinutes, isBefore, isEqual } from "date-fns";
-import { observer } from "mobx-react-lite";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
-import { Fragment, useEffect, useRef, useState } from "react";
+import { Fragment, memo, useEffect, useRef, useState } from "react";
 
 import { classNames, getAvatarUrl, trpc } from "../../../../utilities";
 import { Link } from "../../../link";
@@ -26,7 +25,7 @@ type Props = {
   level: number;
 };
 
-export const Comment = observer<Props>(({ state, comment, level = 1 }) => {
+export const Comment = memo<Props>(({ state, comment, level = 1 }) => {
   const ref = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
@@ -49,22 +48,22 @@ export const Comment = observer<Props>(({ state, comment, level = 1 }) => {
   const trpcContext = trpc.useContext();
 
   const handleSubmit = async () => {
-    state.replyTo = null;
+    state.setReplyTo(undefined);
     setIsEditing(false);
     await Promise.all([
-      trpcContext.comments.getNew.refetch(),
-      trpcContext.posts.getOne.refetch(),
-      state.fetch(),
+      trpcContext.comments.getNew.invalidate(),
+      trpcContext.posts.getOne.invalidate(),
+      state.refetch(),
     ]);
   };
 
   const handleReplyClick = () => {
-    state.replyTo = comment.id;
+    state.setReplyTo(comment.id);
     setIsEditing(false);
   };
 
   const handleEditClick = () => {
-    state.replyTo = null;
+    state.setReplyTo(undefined);
     setIsEditing(true);
   };
 
@@ -137,7 +136,7 @@ export const Comment = observer<Props>(({ state, comment, level = 1 }) => {
               >
                 <RelativeDate date={new Date(comment.createdAt)} />
               </Link>
-              {!isEqual(comment.createdAt, comment.updatedAt) && (
+              {!isEqual(comment.createdAt, comment.textUpdatedAt) && (
                 <time dateTime={comment.updatedAt.toISOString()}>
                   <PencilIcon className="w-2.5 h-2.5 fill-gray-500" />
                 </time>
@@ -145,7 +144,7 @@ export const Comment = observer<Props>(({ state, comment, level = 1 }) => {
             </div>
           </div>
         </div>
-        <div className="whitespace-pre-line break-words">{comment.content}</div>
+        <div className="whitespace-pre-line break-words">{comment.text}</div>
         <div className="flex flex-row items-end gap-x-1">
           <button
             className="text-sm text-gray-500 cursor-pointer"
@@ -196,7 +195,7 @@ export const Comment = observer<Props>(({ state, comment, level = 1 }) => {
       {isEditing && (
         <EditCommentForm
           id={comment.id}
-          text={comment.content}
+          text={comment.text}
           postId={comment.postId}
           parentId={comment.id}
           level={level}

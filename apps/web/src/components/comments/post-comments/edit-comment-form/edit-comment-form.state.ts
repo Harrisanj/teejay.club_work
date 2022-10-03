@@ -1,124 +1,92 @@
 import {
+  updateCommentInput,
   createCommentInput,
   InputError,
-  updateCommentInput,
 } from "@teejay/api";
-import { makeAutoObservable } from "mobx";
-import { NextRouter } from "next/router";
-import { ChangeEvent, FormEvent } from "react";
+import { useRouter } from "next/router";
+import { useState, ChangeEvent, FormEvent, useEffect } from "react";
 
-import {
-  Task,
-  ClientSideTRPC,
-  transformInputError,
-} from "../../../../utilities";
+import { trpc, transformInputError } from "../../../../utilities";
 
 import { Props } from "./edit-comment-form.view";
 
-class EditCommentFormState {
-  constructor(
-    public readonly trpc: ClientSideTRPC,
-    public readonly router: NextRouter
-  ) {
-    makeAutoObservable(this, { trpc: false }, { autoBind: true });
-  }
+export type EditCommentState = ReturnType<typeof useEditCommentState>;
 
-  private postId: number | undefined = undefined;
-  private parentId: number | undefined = undefined;
-  private onSubmit: (() => void) | undefined = undefined;
+export function useEditCommentState({
+  id,
+  text: initialText,
+  postId,
+  parentId,
+  onSubmit,
+}: Props) {
+  const router = useRouter();
 
-  onUpdate({ id, text, postId, parentId, onSubmit }: Props) {
-    this.id = id;
-    this.text = text ?? "";
-    this.postId = postId;
-    this.parentId = parentId;
-    this.onSubmit = onSubmit;
-  }
-
-  private _id?: number = undefined;
-
-  get id() {
-    return this._id;
-  }
-
-  private set id(value: number | undefined) {
-    this._id = value;
-  }
-
-  private _text = "";
-
-  get text() {
-    return this._text;
-  }
-
-  private set text(value: string) {
-    this._text = value;
-  }
-
-  handleTextChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
-    this._text = event.target.value;
+  const [text, setText] = useState(initialText ?? "");
+  const handleTextChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
+    setText(event.target.value);
   };
 
-  get isSubmitButtonDisabled() {
-    return this.text.length < 3;
-  }
+  const [errors, setErrors] = useState({} as Record<string, string[]>);
 
-  private _errors: Record<string, string[]> = {};
+  const updateMutation = trpc.comments.update.useMutation();
+  const createMutation = trpc.comments.create.useMutation();
 
-  get errors() {
-    return this._errors;
-  }
+  const isLoading = createMutation.isLoading || updateMutation.isLoading;
 
-  private setErrors(value: Record<string, string[]>) {
-    this._errors = value;
-  }
+  const isEditing = !!id;
 
-  get isEditing() {
-    return this.id !== undefined;
-  }
+  const isSubmitDisabled = text.trim().length < 1;
 
-  submitTask = new Task(async () => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
     try {
-      let comment;
-      if (this.id) {
+      if (id) {
         const input = updateCommentInput.parse({
-          id: this.id,
-          content: this.text.trim(),
+          id,
+          text: text.trim(),
         });
-        comment = await this.trpc.comments.update.mutate(input);
+        updateMutation.mutate(input);
       } else {
         const input = createCommentInput.parse({
-          postId: this.postId,
-          parentId: this.parentId,
-          content: this.text.trim(),
+          postId,
+          parentId,
+          text: text.trim(),
         });
-        comment = await this.trpc.comments.create.mutate(input);
+        createMutation.mutate(input);
       }
-
-      this.onSubmit?.();
-
-      this.text = "";
-      this.submitTask.reset();
-      this.router.push(
-        { query: { id: this.postId, comment: comment.id } },
-        undefined,
-        { scroll: false }
-      );
     } catch (error) {
-      console.log(error);
       if (error instanceof InputError) {
-        this.setErrors(transformInputError(error));
+        setErrors(transformInputError(error));
       } else {
         throw error;
       }
     }
-  });
+  };
 
-  handleSubmit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  useEffect(() => {
+    const comment = createMutation.data || updateMutation.data;
 
-    return this.submitTask.run();
+    if (!comment) {
+      return;
+    }
+
+    onSubmit?.();
+    setText("");
+
+    router.push({ query: { id: postId, comment: comment.id } }, undefined, {
+      shallow: true,
+      scroll: false,
+    });
+  }, [updateMutation.data, createMutation.data, onSubmit, router, postId]);
+
+  return {
+    text,
+    handleTextChange,
+    handleSubmit,
+    errors,
+    isLoading,
+    isEditing,
+    isSubmitDisabled,
   };
 }
-
-export default EditCommentFormState;

@@ -4,9 +4,10 @@ export const select = (userId: number) =>
   Prisma.validator<Prisma.CommentSelect>()({
     id: true,
     parentId: true,
-    content: true,
+    text: true,
     score: true,
     postId: true,
+    textUpdatedAt: true,
     updatedAt: true,
     createdAt: true,
     post: {
