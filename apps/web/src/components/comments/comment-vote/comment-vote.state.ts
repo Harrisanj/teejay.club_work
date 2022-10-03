@@ -1,54 +1,41 @@
-import { TComment, TCommentVote } from "@teejay/api";
-import { makeAutoObservable } from "mobx";
+import { trpc } from "../../../utilities";
 
-import { Task, ClientSideTRPC } from "../../../utilities";
+import { Props } from "./comment-vote.view";
 
-export class CommentVoteState {
-  constructor(
-    public readonly trpcClient: ClientSideTRPC,
-    private _comment: TComment
-  ) {
-    makeAutoObservable(this, { trpcClient: false }, { autoBind: true });
-  }
+export type CommentVoteState = ReturnType<typeof useCommentVoteState>;
 
-  get comment() {
-    return this._comment;
-  }
+export function useCommentVoteState({ comment }: Props) {
+  const context = trpc.useContext();
 
-  private set comment(value: TComment) {
-    this._comment = value;
-  }
-
-  private _vote: TCommentVote | undefined = this.comment.votes.length
-    ? this.comment.votes[0]
-    : undefined;
-
-  get vote() {
-    return this._vote;
-  }
-
-  private set vote(value: TCommentVote | undefined) {
-    this._vote = value;
-  }
-
-  voteTask = new Task(async (sign: -1 | 1) => {
-    const comment = await this.trpcClient.comments.vote.mutate({
-      commentId: this.comment.id,
-      sign,
-    });
-
-    this.vote = comment.votes.length ? comment.votes[0] : undefined;
-    this.comment = {
-      ...this.comment,
-      score: comment.score,
-    };
+  const { data: user } = trpc.users.getMe.useQuery();
+  const { mutate } = trpc.comments.vote.useMutation({
+    onSuccess() {
+      context.comments.getByPost.invalidate();
+    },
   });
 
-  handleDownvoteClick = async () => {
-    await this.voteTask.run(-1);
+  const isUserLoggedIn = !!user;
+  const isClickable = isUserLoggedIn && comment.author.id !== user.id;
+
+  const handleDownvoteClick = () => {
+    if (!isClickable) {
+      return;
+    }
+    mutate({ commentId: comment.id, sign: -1 });
   };
 
-  handleUpvoteClick = async () => {
-    await this.voteTask.run(1);
+  const handleUpvoteClick = () => {
+    if (!isClickable) {
+      return;
+    }
+    mutate({ commentId: comment.id, sign: 1 });
+  };
+
+  return {
+    comment,
+    isUserLoggedIn,
+    isClickable,
+    handleDownvoteClick,
+    handleUpvoteClick,
   };
 }

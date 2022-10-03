@@ -61,8 +61,8 @@ const PostPage: NextPage<Props> = ({ post: initialData }) => {
     { id: initialData.id },
     { initialData, refetchInterval: 5000 }
   );
-  const post = postQuery.data;
-  if (!post) return null;
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const post = postQuery.data!;
   return (
     <Page title={post.title || `Пост от ${post.author.name}`} description="">
       <div className="md:max-w-2xl w-full md:mx-auto">

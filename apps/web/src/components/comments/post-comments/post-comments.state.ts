@@ -1,78 +1,67 @@
-import { TComment } from "@teejay/api";
 import { max } from "date-fns";
-import { makeAutoObservable, runInAction } from "mobx";
+import { useState, useMemo, useEffect } from "react";
 
-import { ClientSideTRPC, Task } from "../../../utilities";
+import { trpc } from "../../../utilities";
 
-type Node = TComment & { children: Node[] };
+import { useScrollToComment } from "./hooks";
+import { Props } from "./post-comments.view";
+import { TComment } from "./type";
 
-export class PostCommentsState {
-  constructor(
-    public readonly trpc: ClientSideTRPC,
-    public readonly postId: number
-  ) {
-    makeAutoObservable(this, { trpc: false }, { autoBind: true });
-  }
+export type PostCommentsState = ReturnType<typeof usePostCommentsState>;
 
-  private _intervalId = -1;
+export function usePostCommentsState({ postId }: Props) {
+  const [comments, setComments] = useState([] as Omit<TComment, "children">[]);
+  const [total, setTotal] = useState(0);
+  const [replyTo, setReplyTo] = useState<number>();
 
-  onMount() {
-    this.fetch();
+  const lastUpdatedAt = useLastUpdatedAt(comments);
+  const tree = useCommentTree(comments);
 
-    this._intervalId = window.setInterval(this.fetch, 1000);
-  }
+  const query = trpc.comments.getByPost.useQuery(
+    { postId, lastUpdatedAt },
+    {
+      onSuccess(data) {
+        setTotal(data.meta.total);
+        setComments([...comments, ...data.data]);
+      },
+    }
+  );
 
-  onUnmount() {
-    this._fetchTask.reset();
+  useScrollToComment();
 
-    window.clearTimeout(this._intervalId);
-  }
+  return {
+    isLoading: query.isLoading && !comments.length,
+    refetch: query.refetch,
+    tree,
+    total,
+    replyTo,
+    setReplyTo,
+  };
+}
 
-  private _fetchTask = new Task(async () => {
-    const result = await this.trpc.comments.getByPost.query({
-      postId: this.postId,
-      lastUpdatedAt: this._lastUpdatedAt,
+function useLastUpdatedAt(comments: Omit<TComment, "children">[]) {
+  return useMemo(() => {
+    let lastUpdatedAt = new Date(0);
+    comments.forEach((comment) => {
+      lastUpdatedAt = max([lastUpdatedAt, comment.updatedAt]);
     });
+    return lastUpdatedAt;
+  }, [comments]);
+}
 
-    runInAction(() => {
-      result.data.forEach((comment) => {
-        this._map[comment.id] = comment;
-        this._lastUpdatedAt = max([this._lastUpdatedAt, comment.updatedAt]);
-      });
-
-      this._total = result.meta.total;
-      this._isLoading = false;
-    });
-  });
-
-  fetch() {
-    this._fetchTask.run();
-  }
-
-  private _lastUpdatedAt: Date = new Date(0);
-
-  private _total = 0;
-
-  get total() {
-    return this._total;
-  }
-
-  private _isLoading = true;
-
-  get isLoading() {
-    return this._isLoading;
-  }
-
-  private _map: Record<number, TComment> = {};
-
-  get tree(): Node[] {
-    const map: Record<number, Node> = Object.fromEntries(
-      Object.entries(this._map).map(([id, comment]) => [
-        id,
-        { ...comment, children: [] },
+function useCommentTree(comments: Omit<TComment, "children">[]) {
+  return useMemo(() => {
+    const map: Record<number, TComment> = Object.fromEntries(
+      comments.map((comment) => [
+        comment.id,
+        {
+          ...comment,
+          children: [],
+        },
       ])
     );
-    const root: Node[] = [];
+
+    const root: Array<TComment> = [];
 
     Object.values(map).forEach((node) => {
       if (node.parentId) {
@@ -83,15 +72,5 @@ export class PostCommentsState {
     });
 
     return root;
-  }
-
-  private _replyTo: number | null = null;
-
-  get replyTo() {
-    return this._replyTo;
-  }
-
-  set replyTo(value: number | null) {
-    this._replyTo = value;
-  }
+  }, [comments]);
 }
