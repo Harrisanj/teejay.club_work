@@ -1,5 +1,5 @@
 import { max } from "date-fns";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 
 import { trpc } from "../../../utilities";
 
@@ -26,6 +26,12 @@ export function usePostCommentsState({ postId }: Props) {
       },
     }
   );
+
+  useEffect(() => {
+    setComments([]);
+    query.refetch();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [postId]);
 
   useScrollToComment();
 

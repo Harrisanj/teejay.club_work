@@ -78,7 +78,8 @@ export function useEditCommentState({
       shallow: true,
       scroll: false,
     });
-  }, [updateMutation.data, createMutation.data, onSubmit, router, postId]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [updateMutation.data, createMutation.data, onSubmit, postId]);
 
   return {
     text,
