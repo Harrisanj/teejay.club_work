@@ -136,7 +136,7 @@ export const Comment = memo<Props>(({ state, comment, level = 1 }) => {
               >
                 <RelativeDate date={new Date(comment.createdAt)} />
               </Link>
-              {!isEqual(comment.createdAt, comment.updatedAt) && (
+              {!isEqual(comment.createdAt, comment.textUpdatedAt) && (
                 <time dateTime={comment.updatedAt.toISOString()}>
                   <PencilIcon className="w-2.5 h-2.5 fill-gray-500" />
                 </time>

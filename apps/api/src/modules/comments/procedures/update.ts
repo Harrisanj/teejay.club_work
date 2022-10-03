@@ -24,7 +24,7 @@ export const update = t.procedure
 
     return prisma.comment.update({
       where: { id },
-      data: { text },
+      data: { text, textUpdatedAt: new Date() },
       select: select(user?.id ?? -1),
     });
   });
