@@ -20,6 +20,7 @@ export function usePostCommentsState({ postId }: Props) {
   const query = trpc.comments.getByPost.useQuery(
     { postId, lastUpdatedAt },
     {
+      refetchInterval: 1000,
       onSuccess(data) {
         setTotal(data.meta.total);
         setComments([...comments, ...data.data]);
