@@ -44,14 +44,14 @@ export function useEditCommentState({
       if (id) {
         const input = updateCommentInput.parse({
           id,
-          content: text.trim(),
+          text: text.trim(),
         });
         updateMutation.mutate(input);
       } else {
         const input = createCommentInput.parse({
           postId,
           parentId,
-          content: text.trim(),
+          text: text.trim(),
         });
         createMutation.mutate(input);
       }
@@ -66,9 +66,11 @@ export function useEditCommentState({
 
   useEffect(() => {
     const comment = createMutation.data || updateMutation.data;
+
     if (!comment) {
       return;
     }
+
     onSubmit?.();
     setText("");
 

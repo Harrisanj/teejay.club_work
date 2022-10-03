@@ -58,8 +58,8 @@ export const EditCommentForm = memo<Props>((props) => {
             "flex flex-row flex-wrap justify-between": true,
           })}
         >
-          {"content" in state.errors && (
-            <div className="text-red-500">{state.errors["content"]}</div>
+          {"text" in state.errors && (
+            <div className="text-red-500">{state.errors["text"]}</div>
           )}
           <button
             className={classNames({

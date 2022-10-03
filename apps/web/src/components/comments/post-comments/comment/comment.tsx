@@ -144,7 +144,7 @@ export const Comment = memo<Props>(({ state, comment, level = 1 }) => {
             </div>
           </div>
         </div>
-        <div className="whitespace-pre-line break-words">{comment.content}</div>
+        <div className="whitespace-pre-line break-words">{comment.text}</div>
         <div className="flex flex-row items-end gap-x-1">
           <button
             className="text-sm text-gray-500 cursor-pointer"
@@ -195,7 +195,7 @@ export const Comment = memo<Props>(({ state, comment, level = 1 }) => {
       {isEditing && (
         <EditCommentForm
           id={comment.id}
-          text={comment.content}
+          text={comment.text}
           postId={comment.postId}
           parentId={comment.id}
           level={level}
