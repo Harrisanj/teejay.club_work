@@ -51,6 +51,7 @@ export const RedditEmbed = memo<Props>(({ id }) => {
         className="overflow-hidden border-none"
         width="100%"
         height={height}
+        allowFullScreen={true}
         // eslint-disable-next-line react/no-unknown-property
         scrolling="no"
       />
