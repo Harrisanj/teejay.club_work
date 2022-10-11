@@ -4,6 +4,7 @@ import dynamic from "next/dynamic";
 import { memo } from "react";
 
 import { classNames, sanitizeHtml } from "../../utilities";
+import { Embed } from "../embed";
 import { YoutubeEmbed, RedditEmbed } from "../embeds";
 import { Link } from "../link";
 
@@ -132,18 +133,33 @@ function renderBlock(block: OutputBlockData, isSummary: boolean) {
     return <div key={block.id} className="ce-delimiter"></div>;
   }
 
-  if (block.type === "twitter") {
-    return <TwitterEmbed key={block.id} id={block.data.id} />;
-  }
-
-  if (block.type === "telegram") {
-    return <TelegramEmbed key={block.id} id={block.data.id} />;
+  if (block.type === "embed") {
+    return (
+      <Embed
+        key={block.id}
+        isSummary={isSummary}
+        type={block.data.type}
+        payload={block.data.payload}
+        sources={block.data.sources}
+      />
+    );
   }
 
   if (block.type === "youtube") {
     return <YoutubeEmbed key={block.id} id={block.data.id} />;
   }
 
+  // TODO: delete in the future
+  if (block.type === "telegram") {
+    return <TelegramEmbed key={block.id} id={block.data.id} />;
+  }
+
+  // TODO: delete in the future
+  if (block.type === "twitter") {
+    return <TwitterEmbed key={block.id} id={block.data.id} />;
+  }
+
+  // TODO: delete in the future
   if (block.type === "reddit") {
     return <RedditEmbed key={block.id} id={block.data.id} />;
   }

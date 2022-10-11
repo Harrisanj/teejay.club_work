@@ -49,10 +49,8 @@ export function createServerSideTRPC(context: GetServerSidePropsContext) {
 
 export type ClientSideTRPC = inferRouterProxyClient<AppRouter>;
 
-const ClientSideTRPCContext = createContext(null as unknown as ClientSideTRPC);
-
-export const ClientSideTRPCProvider = ClientSideTRPCContext.Provider;
+export const clientSideTRPC = createClientSideTRPC();
 
 export const useClientSideTRPC = () => {
-  return useContext(ClientSideTRPCContext);
+  return clientSideTRPC;
 };

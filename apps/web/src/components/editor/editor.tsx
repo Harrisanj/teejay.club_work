@@ -3,6 +3,7 @@ import { Component } from "react";
 
 import { extractAccessToken } from "../../utilities";
 
+import { Embed } from "./embed";
 import { Reddit } from "./reddit";
 import { Telegram } from "./telegram";
 import { Twitter } from "./twitter";
@@ -30,6 +31,8 @@ export class Editor extends Component<Props> {
       async ({ default: EditorJS }) => {
         const tools = await this.fetchTools();
         return new EditorJS({
+          // @ts-ignore
+          logLevel: "WARN",
           holder: "editorjs",
           placeholder: this.props.placeholder,
           data: this.props.value,
@@ -142,9 +145,11 @@ export class Editor extends Component<Props> {
       list,
       quote,
       delimiter,
+      embed: Embed,
+      youtube: Youtube,
+      // TODO: delete in the future
       telegram: Telegram,
       twitter: Twitter,
-      youtube: Youtube,
       reddit: Reddit,
     };
   }

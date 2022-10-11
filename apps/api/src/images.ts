@@ -9,8 +9,6 @@ import { createContext } from "./context";
 import { prisma } from "./prisma";
 import { s3 } from "./s3";
 
-const UUID_REGEX = /^[a-f0-9]{8}(-[a-f0-9]{4}){3}-[a-f0-9]{12}$/i;
-
 export function images(
   server: FastifyInstance,
   options: unknown,
@@ -26,7 +24,7 @@ export function images(
   });
 
   const paramsSchema = z.object({
-    id: z.string().regex(UUID_REGEX),
+    id: z.string().uuid(),
   });
 
   server.get("/images/:id", async (request, reply) => {

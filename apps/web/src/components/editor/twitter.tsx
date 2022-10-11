@@ -14,36 +14,6 @@ export class Twitter {
     this.data = data;
   }
 
-  static get pasteConfig() {
-    return {
-      patterns: {
-        id: /^https?:\/\/twitter\.com\/[^ ]*$/,
-      },
-    };
-  }
-
-  onPaste(event: PatternPasteEvent) {
-    let url;
-    try {
-      url = new URL(event.detail.data);
-    } catch (error) {
-      return;
-    }
-
-    if (url.hostname !== "twitter.com") {
-      return;
-    }
-
-    const matches = url.pathname.match(/\/.+\/status\/(\d+)/);
-
-    if (!matches) {
-      return;
-    }
-
-    this.data = { id: matches[1] };
-    this.renderChildren();
-  }
-
   render() {
     this.element = document.createElement("span");
     this.element.className = "flex flex-col items-center";

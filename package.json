@@ -8,7 +8,8 @@
   "devDependencies": {
     "@teejay/eslint-config": "workspace:*",
     "prettier": "latest",
-    "turbo": "latest"
+    "turbo": "latest",
+    "typescript": "^4.8.4"
   },
   "engines": {
     "node": ">=18.9.1",

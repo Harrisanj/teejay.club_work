@@ -1,0 +1,6 @@
+{
+  "extends": "@teejay/tsconfig/base.json",
+  "compilerOptions": {
+    "target": "ESNext"
+  }
+}

@@ -3,8 +3,6 @@ import { createRoot, Root } from "react-dom/client";
 
 import { TelegramEmbed } from "../embeds";
 
-const REGEX = /^https?:\/\/t\.me\/([^ ]*)$/;
-
 type Data = { id: string };
 
 export class Telegram {
@@ -14,19 +12,6 @@ export class Telegram {
 
   constructor({ data }: { data: Data }) {
     this.data = data;
-  }
-
-  static get pasteConfig() {
-    return { patterns: { id: REGEX } };
-  }
-
-  onPaste(event: PatternPasteEvent) {
-    const matches = event.detail.data.match(REGEX);
-    if (!matches) {
-      return;
-    }
-    this.data = { id: matches[1] };
-    this.renderChildren();
   }
 
   render() {
