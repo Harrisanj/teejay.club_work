@@ -86,18 +86,12 @@ export class Embed {
     };
 
     this.renderChildren(
-      <picture>
-        {sources.map((source) => (
-          <source
-            key={source.uuid}
-            media={source.media}
-            srcSet={`http://localhost:8042/embeds/${source.uuid}`}
-            width={source.size.width}
-            height={source.size.height}
-          />
-        ))}
-        <img alt={`Пост в ${type}`} />
-      </picture>
+      <EmbedRenderer
+        isSummary={false}
+        type={type}
+        payload={payload}
+        sources={sources}
+      />
     );
   }
 

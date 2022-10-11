@@ -15,7 +15,9 @@ export class Xero {
   }
 
   public static async start() {
-    const browser = await launch();
+    const browser = await launch({
+      args: ["--no-sandbox"],
+    });
     return new Xero(browser);
   }
 

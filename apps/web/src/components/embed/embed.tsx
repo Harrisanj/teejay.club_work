@@ -1,5 +1,7 @@
 import { memo, useMemo } from "react";
 
+import { getEmbedUrl } from "../../utilities";
+
 type Props = {
   isSummary: boolean;
   type: string;
@@ -33,7 +35,7 @@ export const Embed = memo<Props>(({ type, payload, sources, isSummary }) => {
         {sources.map((source) => (
           <source
             key={source.uuid}
-            srcSet={`http://localhost:8042/embeds/${source.uuid}`}
+            srcSet={getEmbedUrl(source.uuid)}
             media={source.media}
             width={source.size.width}
             height={source.size.height}
