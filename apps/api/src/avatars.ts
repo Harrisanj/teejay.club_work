@@ -9,8 +9,6 @@ import { createContext } from "./context";
 import { prisma } from "./prisma";
 import { s3 } from "./s3";
 
-const UUID_REGEX = /^[a-f0-9]{8}(-[a-f0-9]{4}){3}-[a-f0-9]{12}$/i;
-
 export function avatars(
   server: FastifyInstance,
   options: unknown,
@@ -26,7 +24,7 @@ export function avatars(
   });
 
   const paramsSchema = z.object({
-    id: z.union([z.literal("default"), z.string().regex(UUID_REGEX)]),
+    id: z.union([z.literal("default"), z.string().uuid()]),
   });
 
   server.get("/avatars/:id", async (request, reply) => {

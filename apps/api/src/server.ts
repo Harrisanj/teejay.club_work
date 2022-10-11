@@ -4,6 +4,7 @@ import fastify from "fastify";
 
 import { avatars } from "./avatars";
 import { config } from "./config";
+import { embeds } from "./embeds";
 import { images } from "./images";
 
 import { createContext } from "@/context";
@@ -19,6 +20,7 @@ server.register(cors);
 // TODO: move to separate package
 server.register(avatars);
 server.register(images);
+server.register(embeds);
 
 server.register(fastifyTRPCPlugin, {
   prefix: "/trpc",

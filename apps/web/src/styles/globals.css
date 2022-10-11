@@ -20,8 +20,14 @@ body {
 .content a {
   @apply no-underline;
   @apply text-blue-500 hover:text-blue-600;
-  @apply border-b border-blue-300;
+  @apply border-b border-blue-300 hover:border-blue-400;
   @apply transition-colors duration-300;
+}
+
+.content .anchor {
+  @apply no-underline;
+  @apply text-blue-500;
+  @apply border-b border-blue-300;
 }
 
 .content b {

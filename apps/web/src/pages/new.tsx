@@ -38,7 +38,6 @@ export default function New({ posts }: Props) {
   }
 
   const { pages } = postsQuery.data;
-
   return (
     <Page title="Новое в клубе TeeJay">
       <div className="md:max-w-2xl w-full md:mx-auto">
