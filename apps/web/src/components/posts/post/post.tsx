@@ -80,7 +80,7 @@ export const Post: FC<Props> = memo(
                 height={24}
               />
             )}
-            <a
+            <Link
               href={`/users/${post.author.id}`}
               className={classNames(
                 "text-sm whitespace-nowrap text-ellipsis overflow-hidden",
@@ -88,7 +88,7 @@ export const Post: FC<Props> = memo(
               )}
             >
               {post.author.name}
-            </a>
+            </Link>
             {post.author.isVerified && (
               <svg
                 className="-ml-1 w-4 h-4 fill-blue-500"
@@ -170,7 +170,7 @@ export const Post: FC<Props> = memo(
           </div>
         )}
         <div className="mt-3 flex flex-row gap-x-2 text-gray-900 fill-gray-900 text-sm">
-          <a
+          <Link
             href={`/posts/${post.id}#comments`}
             className="flex flex-row items-center gap-x-1"
           >
@@ -189,7 +189,7 @@ export const Post: FC<Props> = memo(
               />
             </svg>
             <div className="font-medium">{post?._count?.comments}</div>
-          </a>
+          </Link>
           <PostVote post={post} />
         </div>
       </Card>
