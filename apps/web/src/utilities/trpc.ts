@@ -5,7 +5,6 @@ import {
   inferRouterProxyClient,
 } from "@trpc/react";
 import { GetServerSidePropsContext } from "next";
-import { createContext, useContext } from "react";
 import superjson from "superjson";
 
 import { extractAccessToken } from ".";

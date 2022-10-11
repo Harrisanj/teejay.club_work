@@ -1,4 +1,3 @@
-import { PatternPasteEvent } from "@editorjs/editorjs";
 import { createRoot, Root } from "react-dom/client";
 
 import { TwitterEmbed } from "../embeds";
