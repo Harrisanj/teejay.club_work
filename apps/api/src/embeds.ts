@@ -23,7 +23,10 @@ export function embeds(
         })
         .promise();
 
-      return reply.header("Content-Type", "image/webp").send(output.Body);
+      return reply
+        .header("Content-Type", "image/webp")
+        .header("Cache-Control", "max-age=31536000")
+        .send(output.Body);
     } catch (error) {
       console.error(error);
       return reply.status(404).send();
