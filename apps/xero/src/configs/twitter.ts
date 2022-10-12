@@ -21,6 +21,7 @@ export const twitterConfig = buildConfig({
     url.searchParams.set("id", payload);
     url.searchParams.set("lang", "ru");
     url.searchParams.set("theme", theme);
+    url.searchParams.set("hideThread", "true");
     return url;
   },
 
