@@ -27,10 +27,17 @@ export const twitterConfig = buildConfig({
 
   async transformPage(page): Promise<void> {
     await page.evaluate(() => {
-      const article = document.querySelector("article");
+      const style = document.createElement("style");
+      const text = document.createTextNode(
+        "* { font-family: 'Roboto' !important; }"
+      );
+      style.appendChild(text);
+      document.head.appendChild(style);
 
-      if (!article) {
-        return;
+      const element =
+        document.querySelector<HTMLDivElement>("div:has(> article)");
+      if (element) {
+        element.style.maxWidth = "500px";
       }
 
       function getElementByXPath(path: string) {
@@ -53,6 +60,10 @@ export const twitterConfig = buildConfig({
 
       getElementByXPath(
         "//span[starts-with(text(), 'Читать ') and contains(text(), 'ответ')]/../../../.."
+      )?.remove();
+
+      getElementByXPath(
+        "//span[text() = 'Узнайте больше в Twitter']/../../../.."
       )?.remove();
     });
   },
