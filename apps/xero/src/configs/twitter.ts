@@ -29,7 +29,7 @@ export const twitterConfig = buildConfig({
     await page.evaluate(() => {
       const style = document.createElement("style");
       const text = document.createTextNode(
-        "* { font-family: 'Roboto' !important; }"
+        "* { font-family: 'Roboto', sans-serif !important; }"
       );
       style.appendChild(text);
       document.head.appendChild(style);
