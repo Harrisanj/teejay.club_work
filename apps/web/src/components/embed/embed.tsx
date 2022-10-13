@@ -1,4 +1,4 @@
-import { memo, useMemo } from "react";
+import { memo, useCallback, useEffect, useMemo, useState } from "react";
 
 import { getEmbedUrl } from "../../utilities";
 
@@ -29,6 +29,36 @@ export const Embed = memo<Props>(({ type, payload, sources, isSummary }) => {
     }
   }, [type, payload]);
 
+  // hack for firefox
+  // TODO: wait firefox fix
+  const calculateWidth = useCallback(() => {
+    if (typeof window === "undefined") {
+      return undefined;
+    }
+    return sources.reduce((width, source) => {
+      const { matches } = window.matchMedia(source.media);
+      if (matches) {
+        return Math.max(width, source.size.width);
+      }
+      return width;
+    }, 0);
+  }, [sources]);
+
+  const [width, setWidth] = useState<number>();
+
+  const recalculateWidth = useCallback(() => {
+    const width = calculateWidth();
+    setWidth(width);
+  }, [calculateWidth]);
+
+  useEffect(() => {
+    recalculateWidth();
+    window.addEventListener("resize", recalculateWidth);
+    return () => {
+      window.removeEventListener("resize", recalculateWidth);
+    };
+  }, [recalculateWidth]);
+
   let children = (
     <div className="flex items-center justify-center">
       <picture>
@@ -41,7 +71,7 @@ export const Embed = memo<Props>(({ type, payload, sources, isSummary }) => {
             height={source.size.height}
           />
         ))}
-        <img alt={`Пост из ${type}`} />
+        <img alt={`Пост из ${type}`} style={{ width }} />
       </picture>
     </div>
   );
