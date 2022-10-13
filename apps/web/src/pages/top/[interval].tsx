@@ -78,11 +78,7 @@ export default function Top({ interval, posts }: Props) {
     postsQuery.fetchNextPage
   );
 
-  if (!postsQuery.data) {
-    return null;
-  }
-
-  const { pages } = postsQuery.data;
+  const pages = postsQuery.data?.pages ?? [];
   return (
     <Page title="Популярное в клубе TeeJay">
       <div className="md:max-w-2xl w-full md:mx-auto">
