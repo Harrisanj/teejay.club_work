@@ -8,7 +8,7 @@ import { t } from "@/trpc";
 export const create = t.procedure
   .use(blockGuard)
   .input(createCommentInput)
-  .mutation(async ({ input, ctx: { user } }) => {
+  .mutation(({ input, ctx: { user } }) => {
     return prisma.comment.create({
       data: {
         ...input,

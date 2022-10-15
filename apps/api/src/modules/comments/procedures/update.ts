@@ -11,7 +11,7 @@ import { t } from "@/trpc";
 export const update = t.procedure
   .use(blockGuard)
   .input(updateCommentInput)
-  .mutation(async ({ input: { id, text }, ctx: { user } }) => {
+  .mutation(async ({ input: { id, ...input }, ctx: { user } }) => {
     const comment = await prisma.comment.findUnique({ where: { id } });
 
     if (!comment) {
@@ -24,7 +24,10 @@ export const update = t.procedure
 
     return prisma.comment.update({
       where: { id },
-      data: { text, textUpdatedAt: new Date() },
+      data: {
+        ...input,
+        editedAt: new Date(),
+      },
       select: select(user?.id ?? -1),
     });
   });

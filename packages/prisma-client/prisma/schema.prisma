@@ -81,20 +81,21 @@ model PostVote {
 }
 
 model Comment {
-  id            Int           @id @default(autoincrement())
-  authorId      Int
-  parentId      Int?
-  postId        Int
-  text          String
-  textUpdatedAt DateTime      @default(now())
-  score         Int           @default(0)
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
-  author        User          @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  parent        Comment?      @relation("Comment", fields: [parentId], references: [id], onDelete: Cascade)
-  post          Post          @relation(fields: [postId], references: [id], onDelete: Cascade)
-  children      Comment[]     @relation("Comment")
-  votes         CommentVote[]
+  id        Int           @id @default(autoincrement())
+  authorId  Int
+  parentId  Int?
+  postId    Int
+  text      String?
+  imageId   String?
+  score     Int           @default(0)
+  createdAt DateTime      @default(now())
+  editedAt  DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+  author    User          @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  parent    Comment?      @relation("Comment", fields: [parentId], references: [id], onDelete: Cascade)
+  post      Post          @relation(fields: [postId], references: [id], onDelete: Cascade)
+  children  Comment[]     @relation("Comment")
+  votes     CommentVote[]
 }
 
 model CommentVote {

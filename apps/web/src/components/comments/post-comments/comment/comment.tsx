@@ -6,7 +6,12 @@ import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import { Fragment, memo, useEffect, useRef, useState } from "react";
 
-import { classNames, getAvatarUrl, trpc } from "../../../../utilities";
+import {
+  classNames,
+  getAvatarUrl,
+  getImageUrl,
+  trpc,
+} from "../../../../utilities";
 import { Link } from "../../../link";
 import { CommentVote } from "../../comment-vote";
 import { CommentList } from "../comment-list";
@@ -136,15 +141,32 @@ export const Comment = memo<Props>(({ state, comment, level = 1 }) => {
               >
                 <RelativeDate date={new Date(comment.createdAt)} />
               </Link>
-              {!isEqual(comment.createdAt, comment.textUpdatedAt) && (
-                <time dateTime={comment.updatedAt.toISOString()}>
+              {!isEqual(comment.createdAt, comment.editedAt) && (
+                <time dateTime={comment.editedAt.toISOString()}>
                   <PencilIcon className="w-2.5 h-2.5 fill-gray-500" />
                 </time>
               )}
             </div>
           </div>
         </div>
-        <div className="whitespace-pre-line break-words">{comment.text}</div>
+        {comment.text && (
+          <div className="whitespace-pre-line break-words">{comment.text}</div>
+        )}
+        {comment.imageId && (
+          <div className="flex flex-row">
+            <a
+              href={getImageUrl(comment.imageId)}
+              target="_blank"
+              rel="noreferrer"
+            >
+              <img
+                className="max-w-[400px] max-h-[300px]"
+                src={getImageUrl(comment.imageId)}
+                alt="Изображение к комментарию"
+              />
+            </a>
+          </div>
+        )}
         <div className="flex flex-row items-end gap-x-1">
           <button
             className="text-sm text-gray-500 cursor-pointer"
@@ -195,7 +217,8 @@ export const Comment = memo<Props>(({ state, comment, level = 1 }) => {
       {isEditing && (
         <EditCommentForm
           id={comment.id}
-          text={comment.text}
+          text={comment.text ?? undefined}
+          imageId={comment.imageId ?? undefined}
           postId={comment.postId}
           parentId={comment.id}
           level={level}

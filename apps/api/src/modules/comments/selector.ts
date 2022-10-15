@@ -5,9 +5,10 @@ export const select = (userId: number) =>
     id: true,
     parentId: true,
     text: true,
+    imageId: true,
     score: true,
     postId: true,
-    textUpdatedAt: true,
+    editedAt: true,
     updatedAt: true,
     createdAt: true,
     post: {
