@@ -103,7 +103,7 @@ export function images(
           withoutEnlargement: true,
         })
         .rotate()
-        .webp({ quality: 75, lossless: false })
+        .webp({ quality: 100, lossless: false })
         .toBuffer();
 
       const imageId = randomUUID();
