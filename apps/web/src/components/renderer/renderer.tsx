@@ -2,6 +2,7 @@ import { OutputBlockData, OutputData } from "@editorjs/editorjs";
 import { ChevronRightIcon } from "@heroicons/react/20/solid";
 import dynamic from "next/dynamic";
 import { memo } from "react";
+import sanitize from "sanitize-html";
 
 import { classNames, sanitizeHtml } from "../../utilities";
 import { Embed } from "../embed";
@@ -63,6 +64,7 @@ function renderBlock(block: OutputBlockData, isSummary: boolean) {
   }
 
   if (block.type === "image") {
+    const caption = sanitize(block.data.caption, { allowedTags: ["br"] });
     return (
       <div
         key={block.id}
@@ -83,7 +85,7 @@ function renderBlock(block: OutputBlockData, isSummary: boolean) {
                 <img
                   className="image-tool__image-picture"
                   src={block.data.url ?? block.data.file.url}
-                  alt={block.data.caption}
+                  alt={caption}
                 />
               </div>
             ) : (
@@ -94,14 +96,14 @@ function renderBlock(block: OutputBlockData, isSummary: boolean) {
                 <img
                   className="image-tool__image-picture"
                   src={block.data.url ?? block.data.file.url}
-                  alt={block.data.caption}
+                  alt={caption}
                 />
               </Link>
             )}
-
-            <div className="cdx-input image-tool__caption">
-              {block.data.caption}
-            </div>
+            <div
+              className="cdx-input image-tool__caption !text-left !text-black !text-base"
+              dangerouslySetInnerHTML={{ __html: caption }}
+            />
           </div>
         </div>
       </div>
