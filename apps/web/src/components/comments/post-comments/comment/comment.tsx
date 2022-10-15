@@ -223,6 +223,7 @@ export const Comment = memo<Props>(({ state, comment, level = 1 }) => {
           parentId={comment.id}
           level={level}
           onSubmit={handleSubmit}
+          onCancel={() => setIsEditing(false)}
         />
       )}
       {state.replyTo === comment.id && (
@@ -231,6 +232,7 @@ export const Comment = memo<Props>(({ state, comment, level = 1 }) => {
           parentId={comment.id}
           level={level}
           onSubmit={handleSubmit}
+          onCancel={() => state.setReplyTo(undefined)}
         />
       )}
       {!!comment.children.length && (

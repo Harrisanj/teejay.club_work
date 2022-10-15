@@ -17,6 +17,7 @@ export type Props = {
   postId: number;
   parentId?: number;
   level?: number;
+  onCancel?: () => void;
   onSubmit?: () => void;
 };
 
@@ -102,14 +103,15 @@ export const EditCommentForm = memo<Props>((props) => {
                 <PhotoIcon className="w-5 h-5 group-hover:stroke-blue-600 stroke-2 transition-colors duration-300" />
               </button>
               <div className="flex flex-row gap-x-1">
-                {/*
-                <button
-                  type="button"
-                  className="px-3 py-1 text-gray-500 hover:text-gray-700 transition-all duration-300"
-                >
-                  Отмена
-                </button>
-                */}
+                {props.onCancel && (
+                  <button
+                    type="button"
+                    onClick={props.onCancel}
+                    className="px-3 py-1 text-gray-500 hover:text-gray-700 transition-all duration-300"
+                  >
+                    Отмена
+                  </button>
+                )}
                 <button
                   className={classNames({
                     "bg-blue-300 shadow-none": state.isSubmitDisabled,
