@@ -160,7 +160,7 @@ export const Comment = memo<Props>(({ state, comment, level = 1 }) => {
               rel="noreferrer"
             >
               <img
-                className="max-w-[400px] max-h-[300px]"
+                className="w-full max-w-[400px] max-h-[300px]"
                 src={getImageUrl(comment.imageId)}
                 alt="Изображение к комментарию"
               />
