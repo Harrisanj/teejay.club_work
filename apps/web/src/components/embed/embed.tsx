@@ -35,6 +35,9 @@ export const Embed = memo<Props>(({ type, payload, sources, isSummary }) => {
     if (typeof window === "undefined") {
       return undefined;
     }
+    if (!Array.isArray(sources)) {
+      return undefined;
+    }
     return sources.reduce((width, source) => {
       const { matches } = window.matchMedia(source.media);
       if (matches) {
@@ -58,6 +61,10 @@ export const Embed = memo<Props>(({ type, payload, sources, isSummary }) => {
       window.removeEventListener("resize", recalculateWidth);
     };
   }, [recalculateWidth]);
+
+  if (!Array.isArray(sources)) {
+    return null;
+  }
 
   let children = (
     <div className="flex items-center justify-center">
