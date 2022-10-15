@@ -18,6 +18,7 @@ import {
   createServerSideTRPC,
   trpc,
   classNames,
+  getImageUrl,
 } from "../../utilities";
 
 import type {
@@ -239,9 +240,26 @@ const UserPage: NextPage<Props> = ({ currentUser, user, posts, comments }) => {
                       </div>
                     </div>
                   </div>
-                  <div className="whitespace-pre-line break-words">
-                    {comment.text}
-                  </div>
+                  {comment.text && (
+                    <div className="whitespace-pre-line break-words">
+                      {comment.text}
+                    </div>
+                  )}
+                  {comment.imageId && (
+                    <div className="flex flex-row">
+                      <a
+                        href={getImageUrl(comment.imageId)}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        <img
+                          className="w-full max-w-[400px] max-h-[300px]"
+                          src={getImageUrl(comment.imageId)}
+                          alt="Изображение к комментарию"
+                        />
+                      </a>
+                    </div>
+                  )}
                   <div className="flex flex-row items-end gap-x-1">
                     <div className="ml-auto">
                       <CommentVote comment={comment} />

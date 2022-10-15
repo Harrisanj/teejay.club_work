@@ -1,6 +1,6 @@
 import { FC } from "react";
 
-import { trpc, getAvatarUrl } from "../../../utilities";
+import { trpc, getAvatarUrl, getImageUrl } from "../../../utilities";
 import { Link } from "../../link";
 import { RelativeDate } from "../../relative-date";
 
@@ -55,16 +55,25 @@ export const NewComments: FC = () => {
                 </div>
               </div>
             </div>
-            <div
-              className="overflow-hidden text-ellipsis max-h-14"
-              style={{
-                display: "-webkit-box",
-                WebkitBoxOrient: "vertical",
-                WebkitLineClamp: 3,
-              }}
-            >
-              {comment.text}
-            </div>
+            {comment.text && (
+              <div
+                className="overflow-hidden text-ellipsis max-h-14"
+                style={{
+                  display: "-webkit-box",
+                  WebkitBoxOrient: "vertical",
+                  WebkitLineClamp: 3,
+                }}
+              >
+                {comment.text}
+              </div>
+            )}
+            {comment.imageId && (
+              <img
+                className="w-full max-w-[50px] max-h-[50px]"
+                src={getImageUrl(comment.imageId)}
+                alt="Изображение к комментарию"
+              />
+            )}
             {comment.post.title && (
               <div className="font-medium overflow-hidden text-ellipsis whitespace-nowrap">
                 {comment.post.title}
