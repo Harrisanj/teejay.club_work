@@ -33,3 +33,21 @@ export const paginateComments = async <T extends Prisma.CommentFindManyArgs>(
   const meta = { total, nextCursor };
   return { meta, data };
 };
+
+export const paginateNotifications = async <
+  T extends Prisma.NotificationFindManyArgs
+>(
+  args: Prisma.SelectSubset<T, Prisma.NotificationFindManyArgs>
+) => {
+  if (args.cursor) {
+    args.skip = (args?.skip ?? 0) + 1;
+  }
+
+  const data = await prisma.notification.findMany<T>(args);
+  const { where } = args;
+  const total = await prisma.notification.count({ where });
+  const id = data[data.length - 1]?.id;
+  const nextCursor = id ? { id } : undefined;
+  const meta = { total, nextCursor };
+  return { meta, data };
+};

@@ -3,6 +3,7 @@ import {
   comments,
   embeds,
   invites,
+  notifications,
   posts,
   subsites,
   users,
@@ -17,6 +18,7 @@ export const appRouter = t.router({
   posts: posts.router,
   subsites: subsites.router,
   users: users.router,
+  notifications: notifications.router,
 });
 
 export type AppRouter = typeof appRouter;

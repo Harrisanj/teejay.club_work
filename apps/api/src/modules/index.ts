@@ -3,6 +3,7 @@ export * as comments from "./comments";
 export * as commentVotes from "./comment-votes";
 export * as embeds from "./embeds";
 export * as invites from "./invites";
+export * as notifications from "./notifications";
 export * as posts from "./posts";
 export * as postVotes from "./post-votes";
 export * as subsites from "./subsites";
