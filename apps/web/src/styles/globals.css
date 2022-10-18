@@ -12,8 +12,7 @@ body {
 }
 
 .content h2,
-.content p,
-.content li {
+.content p {
   @apply overflow-hidden text-ellipsis;
 }
 
