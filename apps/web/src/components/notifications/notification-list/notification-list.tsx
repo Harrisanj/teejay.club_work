@@ -25,6 +25,11 @@ export const NotificationList = memo(() => {
       className="relative w-screen max-w-xs h-full overflow-scroll"
     >
       <Spinner isSpinning={query.isLoading} />
+      {query.data?.pages?.[0]?.data?.length === 0 && (
+        <div className="py-2 px-4 h-full flex items-center justify-center text-sm text-gray-500">
+          Уведомлений нет.
+        </div>
+      )}
       {query.data?.pages.map((page) =>
         page.data.map((notification) => (
           <Notification key={notification.id} notification={notification} />
