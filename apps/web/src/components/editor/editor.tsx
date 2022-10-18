@@ -59,13 +59,72 @@ export class Editor extends Component<Props> {
           // @ts-ignore
           tools,
           minHeight: 40,
+          i18n: {
+            messages: {
+              ui: {
+                blockTunes: {
+                  toggler: {
+                    "Click to tune": "Нажмите, чтобы настроить",
+                    "or drag to move": "или перетащите",
+                  },
+                },
+                inlineToolbar: {
+                  converter: {
+                    "Convert to": "Конвертировать в",
+                  },
+                },
+                toolbar: {
+                  toolbox: {
+                    Add: "Добавить",
+                    Filter: "Поиск...",
+                    "Nothing found": "Ничего не найдено",
+                  },
+                },
+              },
+              toolNames: {
+                Text: "Параграф",
+                Link: "Ссылка",
+                Bold: "Полужирный",
+                Italic: "Курсив",
+
+                Heading: "Заголовок",
+                Image: "Изображение",
+                List: "Список",
+                Quote: "Цитата",
+                Delimiter: "Разделитель",
+              },
+              tools: {
+                link: {
+                  "Добавить ссылку": "",
+                },
+                stub: {
+                  "Блок не может быть отображен корректно.": "",
+                },
+                list: {
+                  Ordered: "Нумерованный",
+                  Unordered: "Маркированный",
+                },
+              },
+              blockTunes: {
+                delete: {
+                  Delete: "Удалить",
+                },
+                moveUp: {
+                  "Move up": "Переместить вверх",
+                },
+                moveDown: {
+                  "Move down": "Переместить вниз",
+                },
+              },
+            },
+          },
         });
       }
     );
   }
 
   async fetchTools() {
-    const [Header, Image, list, quote, delimiter] = await Promise.all([
+    const [Header, Image, list, Quote, delimiter] = await Promise.all([
       // @ts-ignore
       import("@editorjs/header").then((i) => i.default),
       // @ts-ignore
@@ -80,12 +139,17 @@ export class Editor extends Component<Props> {
     return {
       header: {
         class: Header,
-        defaultLevel: 2,
-        inlineToolbar: false,
+        config: {
+          placeholder: "Введите заголовок...",
+          defaultLevel: 2,
+          levels: [2],
+          inlineToolbar: false,
+        },
       },
       image: {
         class: Image,
         config: {
+          captionPlaceholder: "Введите описание изображения...",
           uploader: {
             uploadByFile: async (file: File) => {
               const accessToken = extractAccessToken(document.cookie);
@@ -143,7 +207,13 @@ export class Editor extends Component<Props> {
         },
       },
       list,
-      quote,
+      quote: {
+        class: Quote,
+        config: {
+          quotePlaceholder: "Введите цитату...",
+          captionPlaceholder: "Введите автора цитаты...",
+        },
+      },
       delimiter,
       embed: Embed,
       youtube: Youtube,
