@@ -12,9 +12,7 @@ import { appRouter } from "@/router";
 
 const server = fastify({
   maxParamLength: 5000,
-  // 64 MiB
-  bodyLimit: 1024 * 1024 * 64,
-  logger: true,
+  logger: false,
 });
 
 server.register(cors);

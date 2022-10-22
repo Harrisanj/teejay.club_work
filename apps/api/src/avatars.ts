@@ -1,7 +1,7 @@
 import { randomUUID } from "crypto";
 
+import multipart from "@fastify/multipart";
 import { FastifyInstance } from "fastify";
-import fileUpload from "fastify-file-upload";
 import sharp from "sharp";
 import { z } from "zod";
 
@@ -14,9 +14,9 @@ export function avatars(
   options: unknown,
   done: () => void
 ) {
-  server.register(fileUpload, {
+  server.register(multipart, {
     limits: {
-      fields: 3,
+      fields: 1,
       files: 1,
       // 64 MiB
       fileSize: 1024 * 1024 * 64,
@@ -48,35 +48,37 @@ export function avatars(
     }
   });
 
-  const rawSchema = z.object({
-    files: z.object({
-      file: z.object({
-        name: z.string(),
-        data: z.instanceof(Buffer),
-      }),
-    }),
-  });
-
   server.post("/avatars", async (request, reply) => {
+    const iteratorResult = await request.parts().next();
+
+    if (iteratorResult.done) {
+      return reply.status(400).send();
+    }
+
+    const part = iteratorResult.value;
+
+    if (!("file" in part) || part.fieldname !== "file") {
+      return reply.status(400).send();
+    }
+
     const context = await createContext({ req: request, res: reply });
 
     if (!context.user) {
       return reply.status(401).send();
     }
 
-    const user = await prisma.user.findUnique({
-      where: { id: context.user.id },
+    const user = await prisma.user.findFirst({
+      where: { id: context.user.id, blockedAt: null },
     });
 
     if (!user) {
       return reply.status(401).send();
     }
 
-    const raw = rawSchema.parse(request.raw);
-    const { file } = raw.files;
+    const file = await part.toBuffer();
 
     try {
-      const avatar = await sharp(file.data)
+      const avatar = await sharp(file)
         .resize({
           width: 256,
           height: 256,

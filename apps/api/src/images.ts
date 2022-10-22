@@ -1,7 +1,7 @@
 import { randomUUID } from "crypto";
 
+import multipart from "@fastify/multipart";
 import { FastifyInstance } from "fastify";
-import fileUpload from "fastify-file-upload";
 import sharp from "sharp";
 import { z } from "zod";
 
@@ -14,9 +14,9 @@ export function images(
   options: unknown,
   done: () => void
 ) {
-  server.register(fileUpload, {
+  server.register(multipart, {
     limits: {
-      fields: 3,
+      fields: 1,
       files: 1,
       // 64 MiB
       fileSize: 1024 * 1024 * 64,
@@ -48,26 +48,19 @@ export function images(
     }
   });
 
-  const rawSchema = z.union([
-    z.object({
-      files: z.object({
-        file: z.object({
-          name: z.string(),
-          data: z.instanceof(Buffer),
-        }),
-      }),
-    }),
-    z.object({
-      body: z.object({
-        url: z.string().url(),
-      }),
-    }),
-  ]);
-
   server.post("/images", async (request, reply) => {
-    const raw = rawSchema.safeParse(request.raw);
+    const iteratorResult = await request.parts().next();
 
-    if (!raw.success) {
+    if (iteratorResult.done) {
+      return reply.status(400).send();
+    }
+
+    const part = iteratorResult.value;
+
+    if (
+      (!("value" in part) || part.fieldname !== "url") &&
+      (!("file" in part) || part.fieldname !== "file")
+    ) {
       return reply.status(400).send();
     }
 
@@ -77,21 +70,21 @@ export function images(
       return reply.status(401).send();
     }
 
-    const user = await prisma.user.findUnique({
-      where: { id: context.user.id },
+    const user = await prisma.user.findFirst({
+      where: { id: context.user.id, blockedAt: null },
     });
 
     if (!user) {
       return reply.status(401).send();
     }
 
-    let file;
-    if ("body" in raw.data) {
-      const response = await fetch(raw.data.body.url);
+    let file: Buffer;
+    if ("file" in part) {
+      file = await part.toBuffer();
+    } else {
+      const response = await fetch(part.value as string);
       const arrayBuffer = await response.arrayBuffer();
       file = Buffer.from(arrayBuffer);
-    } else {
-      file = raw.data.files.file.data;
     }
 
     try {
