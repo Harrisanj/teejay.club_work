@@ -9,17 +9,14 @@ import { t } from "@/trpc";
 export const read = t.procedure
   .use(authGuard)
   .input(readInput)
-  .mutation(async ({ input: { id }, ctx: { user } }) => {
-    const notification = await prisma.notification.findFirst({
-      where: { id, userId: user.id },
-    });
-
-    if (!notification) {
-      throw new TRPCError({ code: "NOT_FOUND" });
-    }
-
-    await prisma.notification.update({
-      where: { id },
-      data: { readAt: new Date() },
-    });
+  .mutation(async ({ input: { ids }, ctx: { user } }) => {
+    const readAt = new Date();
+    await prisma.$transaction(
+      ids.map((id) =>
+        prisma.notification.updateMany({
+          where: { id, userId: user.id },
+          data: { readAt },
+        })
+      )
+    );
   });

@@ -1,14 +1,6 @@
 import { AppRouter } from "@teejay/api";
-import { makeAutoObservable } from "mobx";
 import Link from "next/link";
-import {
-  Fragment,
-  memo,
-  ReactNode,
-  useCallback,
-  useEffect,
-  useRef,
-} from "react";
+import { memo, ReactNode, useCallback, useEffect, useRef } from "react";
 
 import { classNames, trpc } from "../../../utilities";
 
@@ -17,13 +9,12 @@ type TNotification =
 
 type Props = {
   notification: TNotification;
+  onRead?: (notificationId: number) => void;
 };
 
-export const Notification = memo<Props>(({ notification }) => {
+export const Notification = memo<Props>(({ notification, onRead }) => {
   const ref = useRef<HTMLDivElement>(null);
   const text = useNotificationText(notification);
-  const trpcContext = trpc.useContext();
-  const readMutation = trpc.notifications.read.useMutation();
 
   const handleIntersect: IntersectionObserverCallback = useCallback(
     (entries) => {
@@ -33,21 +24,16 @@ export const Notification = memo<Props>(({ notification }) => {
         return;
       }
 
-      readMutation.mutate({ id: notification.id });
-
-      trpcContext.notifications.get.invalidate();
-      trpcContext.notifications.getUnreadCount.invalidate();
+      const observer = observerRef.current;
+      observer.disconnect();
+      onRead?.(notification.id);
     },
-    [
-      notification.id,
-      readMutation,
-      trpcContext.notifications.get,
-      trpcContext.notifications.getUnreadCount,
-    ]
+    [notification.id, onRead]
   );
 
   useEffect(() => {
     const element = ref.current;
+
     if (!element) {
       return;
     }
@@ -56,14 +42,18 @@ export const Notification = memo<Props>(({ notification }) => {
       return;
     }
 
-    const observer = new IntersectionObserver(handleIntersect, {
-      threshold: [0, 0.25, 0.5, 0.75, 1],
-    });
+    const observer = observerRef.current;
     observer.observe(element);
     return () => {
       observer.disconnect();
     };
   }, [handleIntersect, notification.id, notification.readAt]);
+
+  const observerRef = useRef<IntersectionObserver>(
+    new IntersectionObserver(handleIntersect, {
+      threshold: [0, 0.25, 0.5, 0.75, 1],
+    })
+  );
 
   return (
     <div
@@ -86,9 +76,9 @@ function useNotificationText(notification: TNotification): ReactNode {
     const { post, commentId, commenter } = commentNotification;
 
     const commenterLink = (
-      <Link href={`/users/${commenter.id}`}>
-        <a className="font-medium">{commenter.name}</a>
-      </Link>
+      <span>
+        <span className="font-medium">{commenter.name}</span>
+      </span>
     );
 
     return (
