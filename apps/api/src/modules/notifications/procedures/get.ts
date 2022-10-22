@@ -10,11 +10,41 @@ export const get = t.procedure
   .query(({ input: { ...pagination }, ctx: { user } }) => {
     return paginateNotifications({
       where: { userId: user.id },
-      include: {
-        commentNotification: {
-          include: {
-            commenter: { select: { id: true, name: true } },
-            post: { select: { id: true, title: true } },
+      select: {
+        id: true,
+        readAt: true,
+        replyToPostNotification: {
+          select: {
+            replyTo: {
+              select: {
+                id: true,
+                title: true,
+              },
+            },
+            reply: {
+              select: {
+                id: true,
+                postId: true,
+                author: { select: { id: true, name: true } },
+              },
+            },
+          },
+        },
+        replyToCommentNotification: {
+          select: {
+            replyTo: {
+              select: {
+                id: true,
+                postId: true,
+              },
+            },
+            reply: {
+              select: {
+                id: true,
+                postId: true,
+                author: { select: { id: true, name: true } },
+              },
+            },
           },
         },
       },

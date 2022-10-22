@@ -1,8 +1,8 @@
 import { AppRouter } from "@teejay/api";
-import Link from "next/link";
 import { memo, ReactNode, useCallback, useEffect, useRef } from "react";
 
-import { classNames, trpc } from "../../../utilities";
+import { classNames } from "../../../utilities";
+import { Link } from "../../link";
 
 type TNotification =
   AppRouter["notifications"]["get"]["_def"]["_output_out"]["data"][0];
@@ -71,30 +71,79 @@ export const Notification = memo<Props>(({ notification, onRead }) => {
 Notification.displayName = "Notification";
 
 function useNotificationText(notification: TNotification): ReactNode {
-  const { commentNotification } = notification;
-  if (commentNotification) {
-    const { post, commentId, commenter } = commentNotification;
+  const { replyToPostNotification, replyToCommentNotification } = notification;
 
-    const commenterLink = (
-      <span>
-        <span className="font-medium">{commenter.name}</span>
-      </span>
+  if (replyToPostNotification) {
+    const { replyTo, reply } = replyToPostNotification;
+
+    const replyAuthorLink = (
+      <Link href={`/users/${reply.author.id}`} className="font-medium">
+        {reply.author.name}
+      </Link>
+    );
+
+    const replyLink = (
+      <Link
+        href={`/posts/${reply.postId}?comment=${reply.id}`}
+        className="font-medium"
+      >
+        комментарий
+      </Link>
+    );
+
+    const replyToLink = replyTo.title ? (
+      <>
+        посту{" "}
+        <Link href={`/posts/${replyTo.id}`} className="font-medium">
+          {replyTo.title}
+        </Link>
+      </>
+    ) : (
+      <Link href={`/posts/${replyTo.id}`} className="font-medium">
+        посту
+      </Link>
     );
 
     return (
-      <Link href={`/posts/${post.id}?comment=${commentId}`}>
-        <a className="block py-2 px-4">
-          {commenterLink} оставил комментарий к вашему посту
-          {post.title ? (
-            <>
-              {" "}
-              <span className="font-medium">{post.title}</span>
-            </>
-          ) : null}
-          .
-        </a>
-      </Link>
+      <div className="py-2 px-4">
+        {replyAuthorLink} оставил {replyLink} к вашему {replyToLink}.
+      </div>
     );
   }
+
+  if (replyToCommentNotification) {
+    const { replyTo, reply } = replyToCommentNotification;
+
+    const replyAuthorLink = (
+      <Link href={`/users/${reply.author.id}`} className="font-medium">
+        {reply.author.name}
+      </Link>
+    );
+
+    const replyLink = (
+      <Link
+        href={`/posts/${reply.postId}?comment=${reply.id}`}
+        className="font-medium"
+      >
+        ответ
+      </Link>
+    );
+
+    const replyToLink = (
+      <Link
+        href={`/posts/${replyTo.postId}?comment=${replyTo.id}`}
+        className="font-medium"
+      >
+        комментарию
+      </Link>
+    );
+
+    return (
+      <div className="py-2 px-4">
+        {replyAuthorLink} оставил {replyLink} к вашему {replyToLink}.
+      </div>
+    );
+  }
+
   return null;
 }

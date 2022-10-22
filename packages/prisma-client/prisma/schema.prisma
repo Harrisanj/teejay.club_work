@@ -9,25 +9,24 @@ datasource db {
 }
 
 model User {
-  id                   Int                   @id @default(autoincrement())
-  login                String                @unique
-  email                String?               @unique
-  name                 String
-  password             String
-  avatarId             String?
-  website              String?
-  isVerified           Boolean               @default(false)
-  blockedAt            DateTime?
-  createdAt            DateTime              @default(now())
-  updatedAt            DateTime              @updatedAt
-  comments             Comment[]
-  commentVotes         CommentVote[]
-  invite               Invite?               @relation("Invite")
-  invites              Invite[]              @relation("Invites")
-  posts                Post[]
-  postVotes            PostVote[]
-  notifications        Notification[]
-  commentNotifications CommentNotification[]
+  id            Int            @id @default(autoincrement())
+  login         String         @unique
+  email         String?        @unique
+  name          String
+  password      String
+  avatarId      String?
+  website       String?
+  isVerified    Boolean        @default(false)
+  blockedAt     DateTime?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  comments      Comment[]
+  commentVotes  CommentVote[]
+  invite        Invite?        @relation(name: "Invite")
+  invites       Invite[]       @relation(name: "Invites")
+  posts         Post[]
+  postVotes     PostVote[]
+  notifications Notification[]
 }
 
 model Invite {
@@ -35,8 +34,8 @@ model Invite {
   code      String @unique
   inviteeId Int?   @unique
   inviterId Int
-  invitee   User?  @relation("Invite", fields: [inviteeId], references: [id], onDelete: Cascade)
-  inviter   User   @relation("Invites", fields: [inviterId], references: [id], onDelete: Cascade)
+  invitee   User?  @relation(name: "Invite", fields: [inviteeId], references: [id], onDelete: Cascade)
+  inviter   User   @relation(name: "Invites", fields: [inviterId], references: [id], onDelete: Cascade)
 }
 
 model Subsite {
@@ -51,23 +50,24 @@ model Subsite {
 }
 
 model Post {
-  id                   Int                   @id @default(autoincrement())
-  title                String?
-  contentV1            String?
-  contentV2            Json?
-  authorId             Int
-  subsiteId            Int?
-  score                Int                   @default(0)
-  viewCount            Int                   @default(0)
-  isPublished          Boolean               @default(true)
-  isPinned             Boolean               @default(false)
-  createdAt            DateTime              @default(now())
-  updatedAt            DateTime              @updatedAt
-  author               User                  @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  subsite              Subsite?              @relation(fields: [subsiteId], references: [id], onDelete: Cascade)
-  comments             Comment[]
-  votes                PostVote[]
-  commentNotifications CommentNotification[]
+  id          Int        @id @default(autoincrement())
+  title       String?
+  contentV1   String?
+  contentV2   Json?
+  authorId    Int
+  subsiteId   Int?
+  score       Int        @default(0)
+  viewCount   Int        @default(0)
+  isPublished Boolean    @default(true)
+  isPinned    Boolean    @default(false)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  author      User       @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  subsite     Subsite?   @relation(fields: [subsiteId], references: [id], onDelete: Cascade)
+  comments    Comment[]
+  votes       PostVote[]
+
+  useless1 ReplyToPostNotification[]
 }
 
 model PostVote {
@@ -84,22 +84,25 @@ model PostVote {
 }
 
 model Comment {
-  id                   Int                   @id @default(autoincrement())
-  authorId             Int
-  parentId             Int?
-  postId               Int
-  text                 String?
-  imageId              String?
-  score                Int                   @default(0)
-  createdAt            DateTime              @default(now())
-  editedAt             DateTime              @default(now())
-  updatedAt            DateTime              @updatedAt
-  author               User                  @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  parent               Comment?              @relation("Comment", fields: [parentId], references: [id], onDelete: Cascade)
-  post                 Post                  @relation(fields: [postId], references: [id], onDelete: Cascade)
-  children             Comment[]             @relation("Comment")
-  votes                CommentVote[]
-  commentNotifications CommentNotification[]
+  id        Int           @id @default(autoincrement())
+  postId    Int
+  authorId  Int
+  parentId  Int?
+  text      String?
+  imageId   String?
+  score     Int           @default(0)
+  createdAt DateTime      @default(now())
+  editedAt  DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+  post      Post          @relation(fields: [postId], references: [id], onDelete: Cascade)
+  author    User          @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  parent    Comment?      @relation(name: "Comment", fields: [parentId], references: [id], onDelete: Cascade)
+  children  Comment[]     @relation(name: "Comment")
+  votes     CommentVote[]
+
+  useless1 ReplyToPostNotification[]
+  useless2 ReplyToCommentNotification[] @relation(name: "ReplyTo")
+  useless3 ReplyToCommentNotification[] @relation(name: "Reply")
 }
 
 model CommentVote {
@@ -116,23 +119,32 @@ model CommentVote {
 }
 
 model Notification {
-  id                  Int                  @id @default(autoincrement())
-  userId              Int
-  readAt              DateTime?
-  createdAt           DateTime             @default(now())
-  updatedAt           DateTime             @updatedAt
-  user                User                 @relation(fields: [userId], references: [id])
-  commentNotification CommentNotification?
+  id                         Int                         @id @default(autoincrement())
+  userId                     Int
+  readAt                     DateTime?
+  createdAt                  DateTime                    @default(now())
+  updatedAt                  DateTime                    @updatedAt
+  user                       User                        @relation(fields: [userId], references: [id])
+  replyToPostNotification    ReplyToPostNotification?
+  replyToCommentNotification ReplyToCommentNotification?
 }
 
-model CommentNotification {
+model ReplyToPostNotification {
   id             Int          @id @default(autoincrement())
   notificationId Int          @unique
-  postId         Int
-  commentId      Int
-  commenterId    Int
+  replyToId      Int
+  replyId        Int
   notification   Notification @relation(fields: [notificationId], references: [id])
-  post           Post         @relation(fields: [postId], references: [id])
-  comment        Comment      @relation(fields: [commentId], references: [id])
-  commenter      User         @relation(fields: [commenterId], references: [id])
+  replyTo        Post         @relation(fields: [replyToId], references: [id])
+  reply          Comment      @relation(fields: [replyId], references: [id])
+}
+
+model ReplyToCommentNotification {
+  id             Int          @id @default(autoincrement())
+  notificationId Int          @unique
+  replyToId      Int
+  replyId        Int
+  notification   Notification @relation(fields: [notificationId], references: [id])
+  replyTo        Comment      @relation(name: "ReplyTo", fields: [replyToId], references: [id])
+  reply          Comment      @relation(name: "Reply", fields: [replyId], references: [id])
 }
