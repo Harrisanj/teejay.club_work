@@ -1,8 +1,8 @@
 import { AppRouter } from "@teejay/api";
-import Link from "next/link";
 import { memo, ReactNode, useCallback, useEffect, useRef } from "react";
 
-import { classNames, trpc } from "../../../utilities";
+import { classNames } from "../../../utilities";
+import { Link } from "../../link";
 
 type TNotification =
   AppRouter["notifications"]["get"]["_def"]["_output_out"]["data"][0];
@@ -71,30 +71,43 @@ export const Notification = memo<Props>(({ notification, onRead }) => {
 Notification.displayName = "Notification";
 
 function useNotificationText(notification: TNotification): ReactNode {
-  const { commentNotification } = notification;
-  if (commentNotification) {
-    const { post, commentId, commenter } = commentNotification;
+  const { replyToPostNotification } = notification;
+
+  if (replyToPostNotification) {
+    const { replyTo: post, reply: comment } = replyToPostNotification;
 
     const commenterLink = (
-      <span>
-        <span className="font-medium">{commenter.name}</span>
-      </span>
+      <Link href={`/users/${comment.author.id}`} className="font-medium">
+        {comment.author.name}
+      </Link>
+    );
+
+    const postLink = post.title ? (
+      <>
+        посту{" "}
+        <Link href={`/posts/${post.id}`} className="font-medium">
+          {post.title}
+        </Link>
+      </>
+    ) : (
+      <Link href={`/posts/${post.id}`} className="font-medium">
+        посту
+      </Link>
     );
 
     return (
-      <Link href={`/posts/${post.id}?comment=${commentId}`}>
-        <a className="block py-2 px-4">
-          {commenterLink} оставил комментарий к вашему посту
-          {post.title ? (
-            <>
-              {" "}
-              <span className="font-medium">{post.title}</span>
-            </>
-          ) : null}
-          .
-        </a>
-      </Link>
+      <div className="py-2 px-4">
+        {commenterLink} оставил{" "}
+        <Link
+          href={`/posts/${post.id}?comment=${comment.id}`}
+          className="font-medium"
+        >
+          комментарий
+        </Link>{" "}
+        к вашему {postLink}.
+      </div>
     );
   }
+
   return null;
 }
