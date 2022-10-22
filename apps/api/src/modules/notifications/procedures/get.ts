@@ -15,10 +15,33 @@ export const get = t.procedure
         readAt: true,
         replyToPostNotification: {
           select: {
-            replyTo: { select: { id: true, title: true } },
+            replyTo: {
+              select: {
+                id: true,
+                title: true,
+              },
+            },
             reply: {
               select: {
                 id: true,
+                postId: true,
+                author: { select: { id: true, name: true } },
+              },
+            },
+          },
+        },
+        replyToCommentNotification: {
+          select: {
+            replyTo: {
+              select: {
+                id: true,
+                postId: true,
+              },
+            },
+            reply: {
+              select: {
+                id: true,
+                postId: true,
                 author: { select: { id: true, name: true } },
               },
             },

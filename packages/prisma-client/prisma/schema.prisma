@@ -101,6 +101,8 @@ model Comment {
   votes     CommentVote[]
 
   useless1 ReplyToPostNotification[]
+  useless2 ReplyToCommentNotification[] @relation(name: "ReplyTo")
+  useless3 ReplyToCommentNotification[] @relation(name: "Reply")
 }
 
 model CommentVote {
@@ -117,13 +119,14 @@ model CommentVote {
 }
 
 model Notification {
-  id                      Int                      @id @default(autoincrement())
-  userId                  Int
-  readAt                  DateTime?
-  createdAt               DateTime                 @default(now())
-  updatedAt               DateTime                 @updatedAt
-  user                    User                     @relation(fields: [userId], references: [id])
-  replyToPostNotification ReplyToPostNotification?
+  id                         Int                         @id @default(autoincrement())
+  userId                     Int
+  readAt                     DateTime?
+  createdAt                  DateTime                    @default(now())
+  updatedAt                  DateTime                    @updatedAt
+  user                       User                        @relation(fields: [userId], references: [id])
+  replyToPostNotification    ReplyToPostNotification?
+  replyToCommentNotification ReplyToCommentNotification?
 }
 
 model ReplyToPostNotification {
@@ -134,4 +137,14 @@ model ReplyToPostNotification {
   notification   Notification @relation(fields: [notificationId], references: [id])
   replyTo        Post         @relation(fields: [replyToId], references: [id])
   reply          Comment      @relation(fields: [replyId], references: [id])
+}
+
+model ReplyToCommentNotification {
+  id             Int          @id @default(autoincrement())
+  notificationId Int          @unique
+  replyToId      Int
+  replyId        Int
+  notification   Notification @relation(fields: [notificationId], references: [id])
+  replyTo        Comment      @relation(name: "ReplyTo", fields: [replyToId], references: [id])
+  reply          Comment      @relation(name: "Reply", fields: [replyId], references: [id])
 }

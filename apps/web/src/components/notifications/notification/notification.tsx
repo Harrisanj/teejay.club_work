@@ -71,40 +71,76 @@ export const Notification = memo<Props>(({ notification, onRead }) => {
 Notification.displayName = "Notification";
 
 function useNotificationText(notification: TNotification): ReactNode {
-  const { replyToPostNotification } = notification;
+  const { replyToPostNotification, replyToCommentNotification } = notification;
 
   if (replyToPostNotification) {
-    const { replyTo: post, reply: comment } = replyToPostNotification;
+    const { replyTo, reply } = replyToPostNotification;
 
-    const commenterLink = (
-      <Link href={`/users/${comment.author.id}`} className="font-medium">
-        {comment.author.name}
+    const replyAuthorLink = (
+      <Link href={`/users/${reply.author.id}`} className="font-medium">
+        {reply.author.name}
       </Link>
     );
 
-    const postLink = post.title ? (
+    const replyLink = (
+      <Link
+        href={`/posts/${reply.postId}?comment=${reply.id}`}
+        className="font-medium"
+      >
+        комментарий
+      </Link>
+    );
+
+    const replyToLink = replyTo.title ? (
       <>
         посту{" "}
-        <Link href={`/posts/${post.id}`} className="font-medium">
-          {post.title}
+        <Link href={`/posts/${replyTo.id}`} className="font-medium">
+          {replyTo.title}
         </Link>
       </>
     ) : (
-      <Link href={`/posts/${post.id}`} className="font-medium">
+      <Link href={`/posts/${replyTo.id}`} className="font-medium">
         посту
       </Link>
     );
 
     return (
       <div className="py-2 px-4">
-        {commenterLink} оставил{" "}
-        <Link
-          href={`/posts/${post.id}?comment=${comment.id}`}
-          className="font-medium"
-        >
-          комментарий
-        </Link>{" "}
-        к вашему {postLink}.
+        {replyAuthorLink} оставил {replyLink} к вашему {replyToLink}.
+      </div>
+    );
+  }
+
+  if (replyToCommentNotification) {
+    const { replyTo, reply } = replyToCommentNotification;
+
+    const replyAuthorLink = (
+      <Link href={`/users/${reply.author.id}`} className="font-medium">
+        {reply.author.name}
+      </Link>
+    );
+
+    const replyLink = (
+      <Link
+        href={`/posts/${reply.postId}?comment=${reply.id}`}
+        className="font-medium"
+      >
+        ответ
+      </Link>
+    );
+
+    const replyToLink = (
+      <Link
+        href={`/posts/${replyTo.postId}?comment=${replyTo.id}`}
+        className="font-medium"
+      >
+        комментарию
+      </Link>
+    );
+
+    return (
+      <div className="py-2 px-4">
+        {replyAuthorLink} оставил {replyLink} к вашему {replyToLink}.
       </div>
     );
   }

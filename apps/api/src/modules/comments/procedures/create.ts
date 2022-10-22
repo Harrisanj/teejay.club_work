@@ -16,7 +16,14 @@ export const create = t.procedure
       select: { id: true, authorId: true },
     });
 
-    if (post === null) {
+    const parentComment = input.parentId
+      ? await prisma.comment.findUnique({
+          where: { id: input.parentId },
+          select: { id: true, authorId: true },
+        })
+      : undefined;
+
+    if (post === null || parentComment === null) {
       throw new TRPCError({ code: "NOT_FOUND" });
     }
 
@@ -28,13 +35,27 @@ export const create = t.procedure
       select: select(user?.id ?? -1),
     });
 
-    if (post.authorId !== user.id) {
+    if (!parentComment && post.authorId !== user.id) {
       await prisma.notification.create({
         data: {
           userId: post.authorId,
           replyToPostNotification: {
             create: {
               replyToId: post.id,
+              replyId: comment.id,
+            },
+          },
+        },
+      });
+    }
+
+    if (parentComment && parentComment.authorId !== user.id) {
+      await prisma.notification.create({
+        data: {
+          userId: parentComment.authorId,
+          replyToCommentNotification: {
+            create: {
+              replyToId: parentComment.id,
               replyId: comment.id,
             },
           },
